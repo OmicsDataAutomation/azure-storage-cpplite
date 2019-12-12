@@ -268,7 +268,7 @@ namespace azure { namespace storage_lite {
         /// <param name="blob">The blob name.</param>
         /// <param name="is">The source stream.</param>
         /// <returns>A <see cref="std::future" /> object that represents the current operation.</returns>
-        AZURE_STORAGE_API std::future<storage_outcome<void>> append_block_from_stream(const std::string &container, const std::string &blob, std::istream &is);
+       AZURE_STORAGE_API std::future<storage_outcome<void>> append_block_from_stream(const std::string &container, const std::string &blob, std::istream &is, size_t size=0);
 
         /// <summary>
         /// Intitiates an asynchronous operation  to create an page blob.

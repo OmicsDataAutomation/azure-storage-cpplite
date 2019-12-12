@@ -365,20 +365,25 @@ std::future<storage_outcome<void>> blob_client::create_append_blob(const std::st
     return async_executor<void>::submit(m_account, request, http, m_context);
 }
 
-std::future<storage_outcome<void>> blob_client::append_block_from_stream(const std::string &container, const std::string &blob, std::istream &is)
+std::future<storage_outcome<void>> blob_client::append_block_from_stream(const std::string &container, const std::string &blob, std::istream &is, size_t size)
 {
     auto http = m_client->get_handle();
 
     auto request = std::make_shared<append_block_request>(container, blob);
 
-    auto cur = is.tellg();
-    is.seekg(0, std::ios_base::end);
-    auto end = is.tellg();
-    is.seekg(cur);
-    request->set_content_length(static_cast<unsigned int>(end - cur));
-
-    http->set_input_stream(storage_istream(is));
-
+    if (size == 0) {
+      auto cur = is.tellg();
+      is.seekg(0, std::ios_base::end);
+      auto end = is.tellg();
+      is.seekg(cur);
+      request->set_content_length(static_cast<unsigned int>(end - cur));
+    } else {
+      request->set_content_length(size);
+      http->set_input_stream(storage_istream(is));
+      http->set_is_input_length_known();
+      http->set_input_content_length(size);
+    }
+    
     return async_executor<void>::submit(m_account, request, http, m_context);
 }
 
