@@ -4,13 +4,14 @@ project(azurestoragelite)
 set(CMAKE_CXX_STANDARD 11)
 
 option(BUILD_TESTS       "Build test codes"                  OFF)
-option(BUILD_SAMPLES     "Build sample codes"                OFF)
+option(BUILD_SAMPLES     "Build sample codes"                ON)
 option(BUILD_SHARED_LIBS "Request build of shared libraries" OFF)
 option(BUILD_ADLS        "Build ADLS Gen2 codes"             OFF)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(AZURE_STORAGE_LITE_HEADER
   include/storage_EXPORTS.h
