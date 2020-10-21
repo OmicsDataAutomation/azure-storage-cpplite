@@ -26,6 +26,7 @@ set(AZURE_STORAGE_LITE_HEADER
   include/hash.h
   include/retry.h
   include/utility.h
+  include/mstream.h
 
   include/tinyxml2.h
   include/xml_parser_base.h
@@ -154,6 +155,7 @@ if (UNIX)
   endif()
 elseif(WIN32)
   list(APPEND EXTRA_LIBRARIES rpcrt4 bcrypt)
+  target_compile_definitions(azure-storage-lite PRIVATE azure_storage_lite_EXPORTS NOMINMAX)
 endif()
 
 if(BUILD_TESTS)
@@ -170,7 +172,7 @@ target_include_directories(azure-storage-lite PUBLIC ${PROJECT_SOURCE_DIR}/inclu
 target_link_libraries(azure-storage-lite Threads::Threads ${CURL_LIBRARIES} ${EXTRA_LIBRARIES})
 
 if(MSVC)
-  target_compile_options(azure-storage-lite PRIVATE /W4 /WX)
+  target_compile_options(azure-storage-lite PRIVATE /W4 /WX /MP)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(azure-storage-lite PRIVATE -Wall -Wextra -Werror -pedantic)
 endif()
@@ -179,17 +181,17 @@ if(BUILD_ADLS)
   add_subdirectory(adls)
 endif()
 
-if(BUILD_TESTS)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
-if(BUILD_SAMPLES)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_SAMPLES)
   add_subdirectory(sample)
 endif()
 
 # Set version numbers centralized
 set(AZURE_STORAGE_LITE_VERSION_MAJOR 0)
-set(AZURE_STORAGE_LITE_VERSION_MINOR 1)
+set(AZURE_STORAGE_LITE_VERSION_MINOR 3)
 set(AZURE_STORAGE_LITE_VERSION_REVISION 0)
 
 install(DIRECTORY include/ DESTINATION include)

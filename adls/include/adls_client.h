@@ -1,17 +1,16 @@
 #pragma once
 
-#ifdef _WIN32
-#ifdef azure_storage_adls_EXPORTS
-#define AZURE_STORAGE_ADLS_API __declspec(dllexport)
-#else
-#define AZURE_STORAGE_ADLS_API __declspec(dllimport)
-#endif
-#else /* ifdef _WIN32 */
-#define AZURE_STORAGE_ADLS_API
+#if defined(_WIN32) && defined(_WINDLL)
+    #ifdef azure_storage_adls_EXPORTS
+    #define AZURE_STORAGE_ADLS_API __declspec(dllexport)
+    #else
+    #define AZURE_STORAGE_ADLS_API __declspec(dllimport)
+    #endif
+#else /* defined(_WIN32) && defined(_WINDLL) */
+    #define AZURE_STORAGE_ADLS_API
 #endif
 
-#include <stdexcept>
-
+#include "storage_outcome.h"
 #include "blob/blob_client.h"
 #include "set_access_control_request.h"
 #include "list_paths_request.h"
@@ -19,6 +18,7 @@
 namespace azure { namespace storage_adls {
     using storage_account = azure::storage_lite::storage_account;
     using executor_context = azure::storage_lite::executor_context;
+    using storage_exception = azure::storage_lite::storage_exception;
 
     struct list_filesystems_item
     {
@@ -29,15 +29,6 @@ namespace azure { namespace storage_adls {
     {
         std::vector<list_filesystems_item> filesystems;
         std::string continuation_token;
-    };
-
-    struct storage_exception : public std::exception
-    {
-        storage_exception(int code, std::string code_name, std::string message) : code(code), code_name(std::move(code_name)), message(std::move(message)) {}
-
-        int code;
-        std::string code_name;
-        std::string message;
     };
 
     /// <summary>

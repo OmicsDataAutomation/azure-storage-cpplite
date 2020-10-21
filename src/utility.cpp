@@ -79,7 +79,6 @@ namespace azure {  namespace storage_lite {
 
     std::string get_ms_date(date_format format)
     {
-        char buf[30];
         std::time_t t = std::time(nullptr);
         std::tm *pm;
 #ifdef _WIN32
@@ -89,14 +88,37 @@ namespace azure {  namespace storage_lite {
 #else
         pm = std::gmtime(&t);
 #endif
-        size_t s = std::strftime(buf, 30, (format == date_format::iso_8601 ? constants::date_format_iso_8601 : constants::date_format_rfc_1123), pm);
-        return std::string(buf, s);
+        if (format == date_format::iso_8601)
+        {
+            char buf[32];
+            std::strftime(buf, sizeof(buf), constants::date_format_iso_8601, pm);
+            return std::string(buf);
+        }
+        else if (format == date_format::rfc_1123)
+        {
+            static const char* weekdays[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+            static const char* months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+            std::string rfc_1123_format = constants::date_format_rfc_1123;
+            rfc_1123_format.replace(rfc_1123_format.find("%a"), 2, weekdays[pm->tm_wday]);
+            rfc_1123_format.replace(rfc_1123_format.find("%b"), 2, months[pm->tm_mon]);
+            char buf[32];
+            std::strftime(buf, sizeof(buf), rfc_1123_format.data(), pm);
+            return std::string(buf);
+        }
+        else
+        {
+            throw std::runtime_error("unknown datetime format");
+        }
     }
 
     std::string get_ms_range(unsigned long long start_byte, unsigned long long end_byte)
     {
-        std::string result("bytes=");
-        result.append(std::to_string(start_byte)).append("-");
+        std::string result;
+        if (start_byte == 0 && end_byte == 0)
+        {
+            return result;
+        }
+        result.append("bytes=" + std::to_string(start_byte) + "-");
         if (end_byte != 0) {
             result.append(std::to_string(end_byte));
         }
@@ -223,6 +245,8 @@ namespace azure {  namespace storage_lite {
             {
                 ret[c] = 1;
             }
+            // Literal + needs to be encoded
+            ret['+'] = 0;
             // Surprisingly, '=' also needs to be encoded because Azure Storage server side is so strict.
             ret['='] = 0;
             return ret;

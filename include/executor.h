@@ -46,6 +46,11 @@ namespace azure {  namespace storage_lite {
                 return m_retry_policy;
             }
 
+            void set_retry_policy(std::shared_ptr<retry_policy_base> retry_policy)
+            {
+                m_retry_policy = std::move(retry_policy);
+            }
+
         private:
             std::shared_ptr<xml_parser_base> m_xml_parser;
             std::shared_ptr<json_parser_base> m_json_parser;
@@ -65,10 +70,11 @@ namespace azure {  namespace storage_lite {
                 std::shared_ptr<executor_context> context,
                 std::shared_ptr<retry_context> retry)
             {
+                http->reset();
                 http->set_error_stream([](http_base::http_code) { return true; }, storage_iostream::create_storage_stream());
                 request->build_request(*account, *http);
 
-                retry_info info = context->retry_policy()->evaluate(*retry);
+                retry_info info = retry->numbers() == 0 ? retry_info(true, std::chrono::seconds(0)) : context->retry_policy()->evaluate(*retry);
                 if (info.should_retry())
                 {
                     http->submit([promise, outcome, account, request, http, context, retry](http_base::http_code result, storage_istream s, CURLcode code)
@@ -76,13 +82,22 @@ namespace azure {  namespace storage_lite {
                         std::string str(std::istreambuf_iterator<char>(s.istream()), std::istreambuf_iterator<char>());
                         if (code != CURLE_OK || unsuccessful(result))
                         {
-                            auto error = context->xml_parser()->parse_storage_error(str);
-                            error.code = std::to_string(result);
+                            storage_error error;
+                            if (code != CURLE_OK)
+                            {
+                                error.code = std::to_string(code);
+                                error.code_name = curl_easy_strerror(code);
+                            }
+                            else
+                            {
+                                error = context->xml_parser()->parse_storage_error(str);
+                                error.code = std::to_string(result);
+                            }
+
                             *outcome = storage_outcome<RESPONSE_TYPE>(error);
                             retry->add_result(code == CURLE_OK ? result: 503);
                             http->reset_input_stream();
                             http->reset_output_stream();
-                            http->reset_input_buffer();
                             async_executor<RESPONSE_TYPE>::submit_helper(promise, outcome, account, request, http, context, retry);
                         }
                         else if (http->get_response_header(constants::header_content_type).find(constants::header_value_content_type_json) != std::string::npos)
@@ -133,21 +148,30 @@ namespace azure {  namespace storage_lite {
                 http->set_error_stream(unsuccessful, storage_iostream::create_storage_stream());
                 request->build_request(*account, *http);
 
-                retry_info info = context->retry_policy()->evaluate(*retry);
+                retry_info info = retry->numbers() == 0 ? retry_info(true, std::chrono::seconds(0)) : context->retry_policy()->evaluate(*retry);
                 if (info.should_retry())
                 {
                     http->submit([promise, outcome, account, request, http, context, retry](http_base::http_code result, storage_istream s, CURLcode code)
                     {
-                        std::string str(std::istreambuf_iterator<char>(s.istream()), std::istreambuf_iterator<char>());
                         if (code != CURLE_OK || unsuccessful(result))
                         {
-                            auto error = context->xml_parser()->parse_storage_error(str);
-                            error.code = std::to_string(result);
+                            storage_error error;
+                            if (code != CURLE_OK)
+                            {
+                                error.code = std::to_string(code);
+                                error.code_name = curl_easy_strerror(code);
+                            }
+                            else
+                            {
+                                std::string str(std::istreambuf_iterator<char>(s.istream()), std::istreambuf_iterator<char>());
+                                error = context->xml_parser()->parse_storage_error(str);
+                                error.code = std::to_string(result);
+                            }
+
                             *outcome = storage_outcome<void>(error);
                             retry->add_result(code == CURLE_OK ? result: 503);
                             http->reset_input_stream();
                             http->reset_output_stream();
-                            http->reset_input_buffer();
                             async_executor<void>::submit_helper(promise, outcome, account, request, http, context, retry);
                         }
                         else

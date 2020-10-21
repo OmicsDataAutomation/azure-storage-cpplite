@@ -28,6 +28,14 @@ jobs:
         container_image: ubuntu20.04:cpplite
         build_type: Release
         extra_cmake_options: -DUSE_OPENSSL=OFF
+      CENTOS6:
+        container_image: centos6:cpplite
+        build_type: Release
+        extra_cmake_options: -DCMAKE_C_COMPILER=$(source scl_source enable devtoolset-6 && which gcc) -DCMAKE_CXX_COMPILER=$(source scl_source enable devtoolset-6 && which g++)
+      CENTOS7_DEBUG:
+        container_image: centos7:cpplite
+        build_type: Debug
+        extra_cmake_options: -DCMAKE_C_COMPILER=$(source scl_source enable devtoolset-4 && which gcc) -DCMAKE_CXX_COMPILER=$(source scl_source enable devtoolset-4 && which g++)
       CENTOS8:
         container_image: centos8:cpplite
         build_type: Release
@@ -99,14 +107,25 @@ jobs:
     maxParallel: 16
     matrix:
       VS2015:
-        vm_image: vs2015-win2012r2
+        vm_image: vs2017-win2016
         build_type: Release
+        platform: x64
+        toolset: v140
       VS2017:
         vm_image: vs2017-win2016
         build_type: Release
+        platform: x64
+        toolset: v141
+      VS2017_WIN32:
+        vm_image: vs2017-win2016
+        build_type: Debug
+        platform: Win32
+        toolset: v141
       VS2019:
         vm_image: windows-2019
         build_type: Debug
+        platform: x64
+        toolset: v142
 
   pool:
     vmImage: $(vm_image)
@@ -130,10 +149,10 @@ jobs:
       displayName: Install Dependencies
 
     - powershell: |
-        cmake CMakeLists.txt -B$(Build.BinariesDirectory) -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg-master\scripts\buildsystems\vcpkg.cmake -DBUILD_SAMPLES=ON -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=ON -A x64
+        cmake CMakeLists.txt -B$(Build.BinariesDirectory) -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg-master\scripts\buildsystems\vcpkg.cmake -DBUILD_SAMPLES=ON -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=ON -A $(platform) -T $(toolset)
         cmake --build $(Build.BinariesDirectory) --config $(build_type)
         Remove-Item $(Build.BinariesDirectory) -Recurse -Force
-        cmake CMakeLists.txt -B$(Build.BinariesDirectory) -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg-master\scripts\buildsystems\vcpkg.cmake -DBUILD_SAMPLES=ON -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=ON -DBUILD_ADLS=ON -A x64
+        cmake CMakeLists.txt -B$(Build.BinariesDirectory) -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg-master\scripts\buildsystems\vcpkg.cmake -DBUILD_SAMPLES=ON -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=ON -DBUILD_ADLS=ON -A $(platform) -T $(toolset)
         cmake --build $(Build.BinariesDirectory) --config $(build_type)
       displayName: Build
 

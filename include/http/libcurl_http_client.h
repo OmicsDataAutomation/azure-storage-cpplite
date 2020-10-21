@@ -19,9 +19,6 @@
 
 #include "http_base.h"
 
-#pragma push_macro("min")
-#undef min
-
 namespace azure {  namespace storage_lite {
 
     class CurlEasyClient;
@@ -134,14 +131,7 @@ namespace azure {  namespace storage_lite {
             check_code(curl_easy_setopt(m_curl, CURLOPT_READDATA, this));
         }
 
-        void set_input_buffer(char* buff) override
-        {
-            m_input_buffer = buff;
-            check_code(curl_easy_setopt(m_curl, CURLOPT_READFUNCTION, read));
-            check_code(curl_easy_setopt(m_curl, CURLOPT_READDATA, this));
-        }
-
-        void set_input_content_length(size_t content_length)
+        void set_input_content_length(uint64_t content_length)
         {
             m_input_content_length = content_length;
         }
@@ -159,11 +149,6 @@ namespace azure {  namespace storage_lite {
         void reset_input_stream() override
         {
             m_input_stream.reset();
-            m_input_read_pos = 0;
-        }
-
-        void reset_input_buffer() override
-        {
             m_input_read_pos = 0;
         }
 
@@ -214,12 +199,11 @@ namespace azure {  namespace storage_lite {
 
         http_method m_method;
         std::string m_url;
-        const char *m_input_buffer = nullptr;
         storage_istream m_input_stream;
         storage_ostream m_output_stream;
         storage_iostream m_error_stream;
-        size_t m_input_content_length = 0;
-        size_t m_input_read_pos = 0;
+        uint64_t m_input_content_length = 0;
+        uint64_t m_input_read_pos = 0;
         bool m_is_input_length_known = false;
         std::function<bool(http_code)> m_switch_error_callback;
 
@@ -252,7 +236,7 @@ namespace azure {  namespace storage_lite {
                 auto &s = p->m_input_stream.istream();
                 if (p->get_is_input_length_known())
                 {
-                    actual_size = std::min(size * nitems, p->m_input_content_length - p->m_input_read_pos);
+                    actual_size = size_t(std::min(uint64_t(size * nitems), p->m_input_content_length - p->m_input_read_pos));
                 }
                 else
                 {
@@ -260,7 +244,7 @@ namespace azure {  namespace storage_lite {
                     s.seekg(0, std::ios_base::end);
                     std::streampos end_pos = s.tellg();
                     s.seekg(cur_pos, std::ios_base::beg);
-                    actual_size = std::min(size * nitems, static_cast<size_t>(end_pos - cur_pos));
+                    actual_size = size_t(std::min(uint64_t(size * nitems), uint64_t(end_pos - cur_pos)));
                 }
                 s.read(buffer, actual_size);
                 if (s.fail())
@@ -268,12 +252,6 @@ namespace azure {  namespace storage_lite {
                     return CURL_READFUNC_ABORT;
                 }
                 actual_size = static_cast<size_t>(s.gcount());
-                p->m_input_read_pos += actual_size;
-            }
-            else if (p->m_input_buffer != nullptr)
-            {
-                actual_size = std::min(size * nitems, p->m_input_content_length - p->m_input_read_pos);
-                memcpy(buffer, p->m_input_buffer + p->m_input_read_pos, actual_size);
                 p->m_input_read_pos += actual_size;
             }
 
@@ -334,10 +312,10 @@ namespace azure {  namespace storage_lite {
             return res;
         }
 
-	 const std::string& get_capath(void)
-	 {
-	     return m_capath;
-	 }
+        const std::string& get_capath()
+        {
+            return m_capath;
+        }
 
         void release_handle(CURL *h)
         {
@@ -346,14 +324,23 @@ namespace azure {  namespace storage_lite {
             m_cv.notify_one();
         }
 
+        void set_proxy(std::string proxy)
+        {
+            m_proxy = std::move(proxy);
+        }
+
+        const std::string& get_proxy() const
+        {
+            return m_proxy;
+        }
+
     private:
         int m_size;
         std::string m_capath;
+        std::string m_proxy;
         std::queue<CURL *> m_handles;
         std::mutex m_handles_mutex;
         std::condition_variable m_cv;
     };
 
 }}   // azure::storage_lite
-
-#pragma pop_macro("min")
