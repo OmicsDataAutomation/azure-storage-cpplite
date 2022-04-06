@@ -36,8 +36,10 @@ storage_error tinyxml2_parser::parse_storage_error(const std::string &xml) const
     if (xdoc.Parse(xml.data(), xml.size()) == tinyxml2::XMLError::XML_SUCCESS)
     {
         auto xerror = xdoc.FirstChildElement("Error");
-        error.code_name = parse_text(xerror, "Code");
-        error.message = parse_text(xerror, "Message");
+        if (xerror) {
+          error.code_name = parse_text(xerror, "Code");
+          error.message = parse_text(xerror, "Message");
+        }
     }
 
     return error;
@@ -61,9 +63,9 @@ list_containers_item tinyxml2_parser::parse_list_containers_item(tinyxml2::XMLEl
     return item;
 }
 
-list_constainers_segmented_response tinyxml2_parser::parse_list_constainers_segmented_response(const std::string &xml) const
+list_containers_segmented_response tinyxml2_parser::parse_list_containers_segmented_response(const std::string &xml) const
 {
-    list_constainers_segmented_response response;
+    list_containers_segmented_response response;
 
     tinyxml2::XMLDocument xdoc;
     if (xdoc.Parse(xml.data(), xml.size()) == tinyxml2::XML_SUCCESS)

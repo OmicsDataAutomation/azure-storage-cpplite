@@ -1,3 +1,7 @@
+**The [next generation of Storage CPP SDK](https://github.com/Azure/azure-sdk-for-cpp/tree/master/sdk/storage) is generally available now. We encourage you to start evaluating the new SDK. The package can be found [here](https://github.com/Azure/azure-sdk-for-cpp/releases).**
+
+**This SDK will continue to be supported and updated on an exceptional basis such as security issue. New features will only be added to next generation SDK.**
+
 # Azure Storage C++ Client Library (Lite)
 
 ## About
@@ -136,8 +140,8 @@ std::string blob_endpoint = "CUSTOMIZED_BLOB_ENDPOINT";
 int connection_count = 2;
 
 // Setup the client
-azure::storage_lite::shared_key_credential credential(account_name, account_key);
-azure::storage_lite::storage_account(account_name, credential, use_https, blob_endpoint);
+auto credential = std::make_shared<azure::storage_lite::shared_key_credential>(account_name, account_key);
+auto storage_account = std::make_shared<azure::storage_lite::storage_account>(account_name, credential, use_https, blob_endpoint);
 azure::storage_lite::blob_client client(storage_account, connection_count);
 
 // Start using
