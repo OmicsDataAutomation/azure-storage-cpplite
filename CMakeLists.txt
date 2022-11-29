@@ -4,7 +4,7 @@ project(azurestoragelite)
 set(CMAKE_CXX_STANDARD 11)
 
 option(BUILD_TESTS       "Build test codes"                  OFF)
-option(BUILD_SAMPLES     "Build sample codes"                ON)
+option(BUILD_SAMPLES     "Build sample codes"                OFF)
 option(BUILD_SHARED_LIBS "Request build of shared libraries" OFF)
 option(BUILD_ADLS        "Build ADLS Gen2 codes"             ON)
 
