@@ -35,6 +35,8 @@ set(AZURE_STORAGE_LITE_HEADER
 
   include/json_parser_base.h
 
+  include/ossl_shim.h
+
   include/storage_account.h
   include/storage_credential.h
   include/storage_outcome.h
@@ -95,6 +97,8 @@ set(AZURE_STORAGE_LITE_SOURCE
 
   src/tinyxml2.cpp
   src/tinyxml2_parser.cpp
+
+  src/ossl_shim.cpp
 
   src/storage_account.cpp
   src/storage_credential.cpp
