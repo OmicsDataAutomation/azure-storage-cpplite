@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <system_error>
 #include <dlfcn.h>
 
 #ifdef _WIN32
@@ -40,6 +41,7 @@ std::string dl_error_;
 		  }
 		}
 
+		void init(void);
 		void *get_dlopen_handle(const std::string& name, const std::string& version); 
 		void *get_dlopen_handle(const std::string& name); 
 
@@ -53,6 +55,17 @@ std::string dl_error_;
 		  }
 		  return retPtr; 
 		}
+
+#define BIND_SYMBOL(H, X, Y, Z)  \
+  do {                           \
+    clear_dlerror();             \
+    X = Z dlsym(H, Y);           \
+    if (!X) {                    \
+      set_dlerror();             \
+      throw std::system_error(ECANCELED, std::generic_category(), dl_error_); \
+    }                            \
+  } while (false)
+
 
 //OpenSSL1 functions redirected to call dynamically using the below functions
 #define HMAC_CTX_new   HMAC_CTX_new_ossl1_shim
