@@ -23,6 +23,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
 
     - name: Install Prereqs and Configure CMake - Ubuntu
       if: startsWith(matrix.os,'ubuntu')
@@ -49,15 +52,18 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
         make -j4
         make test
+
+    - name: Launch Azurite
+      shell: bash
+      run: |
+        npm install -g azurite
+        mkdir $CMAKE_BUILD_DIR/azurite
+        azurite --silent --location $CMAKE_BUILD_DIR/azurite &
         
     - name: Test
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
-      run: |
-        mkdir azurite
-        docker pull mcr.microsoft.com/azure-storage/azurite
-        docker run -p 10000:10000 azurite-blob --blobHost 0.0.0.0 --blobPort 10000 mcr.microsoft.com/azure-storage/azurite -v ${{env.CMAKE_BUILD_DIR}}/azurite
-        ./azure-storage-test
+      run: ./azure-storage-test
         
     - name: Upload Coverage to CodeCov
       uses: codecov/codecov-action@v3
