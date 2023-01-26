@@ -550,7 +550,6 @@ TEST_CASE("Parallel upload download", "[block blob],[blob_service]")
         {33 * 1024 * 1024 + 1234, 8 * 1024 * 1024 + 5678, 8},
     };
 
-    int i = 0;
     for (auto t : test_cases)
     {
         const char guard_c = '\xdd';
