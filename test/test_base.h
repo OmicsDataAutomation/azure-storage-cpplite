@@ -16,7 +16,9 @@ namespace as_test {
         static azure::storage_lite::blob_client& test_blob_client(int size = 1);
 
         static const std::string& standard_storage_connection_string() {
-            static std::string sscs = "DefaultEndpointsProtocol=https;";
+            // see https://learn.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string
+            // static std::string sscs = "DefaultEndpointsProtocol=https;AccountName=storagesample;AccountKey=<account-key>"
+            static std::string sscs = "UseDevelopmentStorage=true"; // Shortcut connection string for azurite
             return sscs;
         }
 
