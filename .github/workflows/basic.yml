@@ -52,10 +52,10 @@ jobs:
     - name: Test
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
-      uses: mcr.microsoft.com/azure-storage/azurite
       run: |
         mkdir azurite
-        docker run -p 10000:10000 azurite-blob mcr.microsoft.com/azure-storage/azurite -v ${{env.CMAKE_BUILD_DIR}}/azurite
+        docker pull mcr.microsoft.com/azure-storage/azurite
+        docker run -p 10000:10000 azurite-blob --blobHost 0.0.0.0 --blobPort 10000 mcr.microsoft.com/azure-storage/azurite -v ${{env.CMAKE_BUILD_DIR}}/azurite
         ./azure-storage-test
         
     - name: Upload Coverage to CodeCov
