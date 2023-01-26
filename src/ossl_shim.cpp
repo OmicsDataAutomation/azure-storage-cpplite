@@ -47,34 +47,48 @@ namespace azure {  namespace storage_lite {
 
 		
 
-void* (*hmac_ctx_new_fptr)();
-int (*hmac_ctx_reset_fptr)(void *);
-int (*hmac_init_ex_fptr)(void *, const void *, int , const void *, void *);
-int (*hmac_update_fptr)(void *, const unsigned char *, size_t);
-int (*hmac_final_fptr)(void *, unsigned char *, unsigned int *);
-void (*hmac_ctx_free_fptr)(void *);
-void* (*evp_mac_fetch_fptr)(void *, const char *, const char *);
-void* (*evp_mac_ctx_new_fptr)(void *);
-OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_utf8_string_fptr)(const char *, char *, size_t);
-OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_end_fptr)(void);
-int (*evp_mac_init_fptr)(void *, const unsigned char *, size_t, const OSSL_PARAM_OSSL3_SHIM []);
-int (*evp_mac_update_fptr)(void *ctx, const unsigned char *data, size_t datalen);
-int (*evp_mac_final_fptr)(void *ctx, unsigned char *out, size_t *outl, size_t outsize);
+    void* dl_handle = nullptr;
+    unsigned long ossl_ver = 0;
+    void* (*hmac_ctx_new_fptr)();
+    int (*hmac_ctx_reset_fptr)(void *);
+    int (*hmac_init_ex_fptr)(void *, const void *, int , const void *, void *);
+    int (*hmac_update_fptr)(void *, const unsigned char *, size_t);
+    int (*hmac_final_fptr)(void *, unsigned char *, unsigned int *);
+    void (*hmac_ctx_free_fptr)(void *);
+    void* (*evp_mac_fetch_fptr)(void *, const char *, const char *);
+    void* (*evp_mac_ctx_new_fptr)(void *);
+    OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_utf8_string_fptr)(const char *, char *, size_t);
+    OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_end_fptr)(void);
+    int (*evp_mac_init_fptr)(void *, const unsigned char *, size_t, const OSSL_PARAM_OSSL3_SHIM []);
+    int (*evp_mac_update_fptr)(void *ctx, const unsigned char *data, size_t datalen);
+    int (*evp_mac_final_fptr)(void *ctx, unsigned char *out, size_t *outl, size_t outsize);
 
-		void init(void) {
-			BIND_SYMBOL(dl_handle, hmac_ctx_new_fptr, "HMAC_CTX_new", (void*(*)(void)) );
-			BIND_SYMBOL(dl_handle, hmac_ctx_reset_fptr, "HMAC_CTX_reset", (int(*)(void*)) );
-			BIND_SYMBOL(dl_handle, hmac_init_ex_fptr, "HMAC_Init_ex", (int(*)(void *, const void *, int , const void *, void *)) );
-			BIND_SYMBOL(dl_handle, hmac_update_fptr, "HMAC_Update", (int(*)(void *, const unsigned char *, size_t)) );
-			BIND_SYMBOL(dl_handle, hmac_final_fptr, "HMAC_Final", (int(*)(void *, unsigned char *, unsigned int *)) );
-			BIND_SYMBOL(dl_handle, hmac_ctx_free_fptr, "HMAC_CTX_free", (void(*)(void *)) );
-			BIND_SYMBOL(dl_handle, evp_mac_fetch_fptr, "EVP_MAC_fetch", (void*(*)(void *, const char *, const char *)) );
-			BIND_SYMBOL(dl_handle, evp_mac_ctx_new_fptr, "EVP_MAC_CTX_new", (void*(*)(void *)) );
-			BIND_SYMBOL(dl_handle, ossl_param_construct_utf8_string_fptr, "OSSL_PARAM_construct_utf8_string", (OSSL_PARAM_OSSL3_SHIM(*)(const char *, char *, size_t)) );
-			BIND_SYMBOL(dl_handle, ossl_param_construct_end_fptr, "OSSL_PARAM_construct_end", (OSSL_PARAM_OSSL3_SHIM(*)(void)) );
-			BIND_SYMBOL(dl_handle, evp_mac_init_fptr, "EVP_MAC_init", (int(*)(void *, const unsigned char *, size_t, const OSSL_PARAM_OSSL3_SHIM [])) );
-			BIND_SYMBOL(dl_handle, evp_mac_update_fptr, "EVP_MAC_update", (int(*)(void *, const unsigned char *, size_t)) );
-			BIND_SYMBOL(dl_handle, evp_mac_final_fptr, "EVP_MAC_final", (int(*)(void *, unsigned char *, size_t *, size_t)) );
+		void ossl_shim_init(void) {
+
+		  if(dl_handle == nullptr) {
+				dl_handle = get_dlopen_handle("crypto");
+  			if(!dl_handle) {
+      	  throw std::runtime_error("libcrypto.so is not loaded in the system");
+  			}
+				ossl_ver = OpenSSL_version_num();
+        if(ossl_ver < 0x30000000L) {
+			    BIND_SYMBOL(dl_handle, hmac_ctx_new_fptr, "HMAC_CTX_new", (void*(*)(void)) );
+			    BIND_SYMBOL(dl_handle, hmac_ctx_reset_fptr, "HMAC_CTX_reset", (int(*)(void*)) );
+			    BIND_SYMBOL(dl_handle, hmac_init_ex_fptr, "HMAC_Init_ex", (int(*)(void *, const void *, int , const void *, void *)) );
+			    BIND_SYMBOL(dl_handle, hmac_update_fptr, "HMAC_Update", (int(*)(void *, const unsigned char *, size_t)) );
+			    BIND_SYMBOL(dl_handle, hmac_final_fptr, "HMAC_Final", (int(*)(void *, unsigned char *, unsigned int *)) );
+			    BIND_SYMBOL(dl_handle, hmac_ctx_free_fptr, "HMAC_CTX_free", (void(*)(void *)) );
+        } else {
+			    BIND_SYMBOL(dl_handle, evp_mac_fetch_fptr, "EVP_MAC_fetch", (void*(*)(void *, const char *, const char *)) );
+			    BIND_SYMBOL(dl_handle, evp_mac_ctx_new_fptr, "EVP_MAC_CTX_new", (void*(*)(void *)) );
+			    BIND_SYMBOL(dl_handle, ossl_param_construct_utf8_string_fptr, "OSSL_PARAM_construct_utf8_string", 
+            (OSSL_PARAM_OSSL3_SHIM(*)(const char *, char *, size_t)) );
+			    BIND_SYMBOL(dl_handle, ossl_param_construct_end_fptr, "OSSL_PARAM_construct_end", (OSSL_PARAM_OSSL3_SHIM(*)(void)) );
+			    BIND_SYMBOL(dl_handle, evp_mac_init_fptr, "EVP_MAC_init", (int(*)(void *, const unsigned char *, size_t, const OSSL_PARAM_OSSL3_SHIM [])) );
+			    BIND_SYMBOL(dl_handle, evp_mac_update_fptr, "EVP_MAC_update", (int(*)(void *, const unsigned char *, size_t)) );
+			    BIND_SYMBOL(dl_handle, evp_mac_final_fptr, "EVP_MAC_final", (int(*)(void *, unsigned char *, size_t *, size_t)) );
+        }
+      }
 		}
 
 		void *HMAC_CTX_new_ossl1_shim(void) {

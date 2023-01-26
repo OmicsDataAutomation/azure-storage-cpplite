@@ -19,7 +19,6 @@
 
 namespace azure {  namespace storage_lite {
 
-void* dl_handle = NULL;
 std::string dl_error_;
 #ifdef __APPLE__
   std::vector<std::string> dl_paths_ = {"/usr/local/Cellar/lib/", "/usr/local/lib/", "/usr/lib/", ""};
@@ -28,6 +27,8 @@ std::string dl_error_;
 #else
 #  error Platform not supported
 #endif
+    extern void* dl_handle;
+    extern unsigned long ossl_ver;
 
 		inline void clear_dlerror() {
 		  dl_error_ = std::string("");
@@ -41,20 +42,9 @@ std::string dl_error_;
 		  }
 		}
 
-		void init(void);
+		void ossl_shim_init(void);
 		void *get_dlopen_handle(const std::string& name, const std::string& version); 
 		void *get_dlopen_handle(const std::string& name); 
-
-		inline void* api_exists(void *HANDLE, const char* FUNC)  {
-			void* retPtr = nullptr;
-		  clear_dlerror();    
-		  retPtr = dlsym(HANDLE, FUNC);    
-		  if(retPtr == nullptr) {
-		    set_dlerror();
-		    return NULL;
-		  }
-		  return retPtr; 
-		}
 
 #define BIND_SYMBOL(H, X, Y, Z)  \
   do {                           \

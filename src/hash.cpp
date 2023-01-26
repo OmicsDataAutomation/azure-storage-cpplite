@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 namespace azure {  namespace storage_lite {
+
     std::string hash(const std::string &to_sign, const std::vector<unsigned char> &key)
     {
         unsigned int digest_length = SHA256_DIGEST_LENGTH;
@@ -32,12 +33,7 @@ namespace azure {  namespace storage_lite {
         BCryptDestroyHash(hash_handle);
 #else
 #ifdef USE_OPENSSL
-				dl_handle = get_dlopen_handle("crypto");
-  			if(!dl_handle)
-  			{
-          throw std::runtime_error("libcrypto.so is not loaded in the system");
-  			}
-				unsigned long ossl_ver = OpenSSL_version_num();
+				ossl_shim_init();
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
         HMAC_CTX ctx;
         HMAC_CTX_init(&ctx);
