@@ -16,48 +16,48 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macOS-latest]
+        os: [ubuntu-20.04, ubuntu-22.04, macOS-11]
 
-  runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
-  steps:
-  - uses: actions/checkout@v3
+    steps:
+    - uses: actions/checkout@v3
 
-  - name: Install Prereqs and Configure CMake - Ubuntu
-    if: startsWith(matrix.os,'ubuntu')
-    shell: bash
-    run: |
-      sudo apt-get update -q
-      sudo apt-get -y install cmake lcov
-      sudo apt-get -y install zlib1g-dev libssl-dev uuid-dev libcurl4-openssl-dev
-      mkdir $CMAKE_BUILD_DIR
+    - name: Install Prereqs and Configure CMake - Ubuntu
+      if: startsWith(matrix.os,'ubuntu')
+      shell: bash
+      run: |
+        sudo apt-get update -q
+        sudo apt-get -y install cmake lcov
+        sudo apt-get -y install zlib1g-dev libssl-dev uuid-dev libcurl4-openssl-dev
+        mkdir $CMAKE_BUILD_DIR
 
-  - name: Install Prereqs and Configure CMake - MacOS
-    if: startsWith(matrix.os, 'macOS')
-    shell: bash
-    run: |
-      brew list cmake &>/dev/null || brew install cmake
-      brew list lcov &>/dev/null || brew install lcov
-      brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
-      mkdir $CMAKE_BUILD_DIR
+    - name: Install Prereqs and Configure CMake - MacOS
+      if: startsWith(matrix.os, 'macOS')
+      shell: bash
+      run: |
+        brew list cmake &>/dev/null || brew install cmake
+        brew list lcov &>/dev/null || brew install lcov
+        brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
+        mkdir $CMAKE_BUILD_DIR
 
-  - name: Build
-    shell: bash
-    working-directory: ${{env.CMAKE_BUILD_DIR}}
-    run: |
-      cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
-      make -j4
-      make test
-
-  - name: Test
-    shell: bash
-    working-directory: ${{env.CMAKE_BUILD_DIR}}
-    uses: mcr.microsoft.com/azure-storage/azurite
-    run: |
-      mkdir azurite
-      docker run -p 10000:10000 azurite-blob mcr.microsoft.com/azure-storage/azurite -v ${{env.CMAKE_BUILD_DIR}}/azurite
-      ./azure-storage-test
-
-  - name: Upload Coverage to CodeCov
-    uses: codecov/codecov-action@v3
+    - name: Build
+      shell: bash
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
+        make -j4
+        make test
+        
+    - name: Test
+      shell: bash
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
+      uses: mcr.microsoft.com/azure-storage/azurite
+      run: |
+        mkdir azurite
+        docker run -p 10000:10000 azurite-blob mcr.microsoft.com/azure-storage/azurite -v ${{env.CMAKE_BUILD_DIR}}/azurite
+        ./azure-storage-test
+        
+    - name: Upload Coverage to CodeCov
+      uses: codecov/codecov-action@v3
 
