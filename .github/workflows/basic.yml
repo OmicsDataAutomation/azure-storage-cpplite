@@ -58,6 +58,7 @@ jobs:
       run: |
         npm install -g azurite
         mkdir $CMAKE_BUILD_DIR/azurite
+        echo "*** Azurite version = $(azurite --version)"
         azurite --silent --location $CMAKE_BUILD_DIR/azurite &
         
     - name: Test
