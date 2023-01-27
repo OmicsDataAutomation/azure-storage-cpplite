@@ -64,7 +64,11 @@ jobs:
     - name: Test
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
-      run: ./azure-storage-test [blob]
+      run: |
+         # Create container called test as TileDB expects the container to be already created
+         az && echo "Azure CLI installed!" || echo "Azure CLI not FOUND"
+         az storage container create -n test --connection-string "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=https://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=https://127.0.0.1:10001/devstoreaccount1;"
+         # ./azure-storage-test [blob]
         
     - name: Upload Coverage to CodeCov
       uses: codecov/codecov-action@v3
