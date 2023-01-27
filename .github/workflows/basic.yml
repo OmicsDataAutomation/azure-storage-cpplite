@@ -59,7 +59,7 @@ jobs:
         npm install -g azurite
         mkdir $CMAKE_BUILD_DIR/azurite
         echo "*** Azurite version = $(azurite --version)"
-        azurite --silent --location $CMAKE_BUILD_DIR/azurite &
+        azurite --silent --loose --location $CMAKE_BUILD_DIR/azurite &
         
     - name: Test
       shell: bash
@@ -67,7 +67,7 @@ jobs:
       run: |
          # Create container called test as TileDB expects the container to be already created
          az && echo "Azure CLI installed!" || echo "Azure CLI not FOUND"
-         az storage container create -n test --connection-string "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=https://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=https://127.0.0.1:10001/devstoreaccount1;"
+         az storage container create -n test --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;"
          # ./azure-storage-test [blob]
         
     - name: Upload Coverage to CodeCov
