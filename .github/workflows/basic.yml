@@ -27,7 +27,7 @@ jobs:
       with:
         node-version: 16
 
-    - name: Install Prereqs and Configure CMake - Ubuntu
+    - name: Install Prereqs - Ubuntu
       if: startsWith(matrix.os,'ubuntu')
       shell: bash
       run: |
@@ -36,7 +36,7 @@ jobs:
         sudo apt-get -y install zlib1g-dev libssl-dev uuid-dev libcurl4-openssl-dev
         mkdir $CMAKE_BUILD_DIR
 
-    - name: Install Prereqs and Configure CMake - MacOS
+    - name: Install Prereqs - MacOS
       if: startsWith(matrix.os, 'macOS')
       shell: bash
       run: |
@@ -64,7 +64,7 @@ jobs:
     - name: Test
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
-      run: ./azure-storage-test
+      run: ./azure-storage-test [blob]
         
     - name: Upload Coverage to CodeCov
       uses: codecov/codecov-action@v3
