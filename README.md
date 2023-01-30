@@ -171,8 +171,6 @@ When contributing to this client library, there are following ground rules:
 4. Introducing new dependency should be done with much great caution. Any new dependency should introduce significant performance improvement or unblock critical user scenario.
 
 ### Build Test
-Install Catch2 via package manager, or download [Catch2 single header version](https://raw.githubusercontent.com/catchorg/Catch2/master/single_include/catch2/catch.hpp) and specify the location with `-DCATCH2_INCLUDE_DIR=<catch2 path>` when build.
-
 Add `-DBUILD_TESTS=ON` when building the repository.
 
 Please modify the [connection string here](https://github.com/azure/azure-storage-cpplite/blob/master/test/test_base.h#L19) to successfully run the tests. All the tests use standard Azure Storage account.

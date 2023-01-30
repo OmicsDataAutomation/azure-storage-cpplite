@@ -129,6 +129,8 @@ set(AZURE_STORAGE_LITE_SOURCE
   src/blob/blob_client_wrapper.cpp
 )
 
+set_source_files_properties(src/hash.cpp PROPERTIES COMPILE_OPTIONS "-Wno-deprecated-declarations")
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -163,13 +165,10 @@ elseif(WIN32)
 endif()
 
 if(BUILD_TESTS)
-  find_package(Catch2)
-  if(NOT Catch2_FOUND)
-    find_path(SINGLE_HEADER_CATCH2_INCLUDE_DIR catch2/catch.hpp PATHS ${CATCH2_INCLUDE_DIR})
-    message("Found single-header Catch2: ${SINGLE_HEADER_CATCH2_INCLUDE_DIR}/catch2/catch.hpp")
+    find_path(SINGLE_HEADER_CATCH2_INCLUDE_DIR catch2/catch.hpp PATHS ${CATCH2_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/test")
+    message(STATUS "Found single-header Catch2: ${SINGLE_HEADER_CATCH2_INCLUDE_DIR}/catch2/catch.hpp")
     add_library(Catch2::Catch2 INTERFACE IMPORTED)
     set_target_properties(Catch2::Catch2 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SINGLE_HEADER_CATCH2_INCLUDE_DIR})
-  endif()
 endif()
 
 target_include_directories(azure-storage-lite PUBLIC ${PROJECT_SOURCE_DIR}/include ${CURL_INCLUDE_DIRS} PRIVATE ${EXTRA_INCLUDE_DIRS})
@@ -195,8 +194,8 @@ endif()
 
 # Set version numbers centralized
 set(AZURE_STORAGE_LITE_VERSION_MAJOR 0)
-set(AZURE_STORAGE_LITE_VERSION_MINOR 3)
-set(AZURE_STORAGE_LITE_VERSION_REVISION 0)
+set(AZURE_STORAGE_LITE_VERSION_MINOR 4)
+set(AZURE_STORAGE_LITE_VERSION_REVISION oda)
 
 install(DIRECTORY include/ DESTINATION include)
 install(TARGETS azure-storage-lite

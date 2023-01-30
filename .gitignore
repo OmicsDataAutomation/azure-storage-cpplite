@@ -60,5 +60,9 @@ build.release
 # Git
 *.orig
 
-# Test framework
-test/catch2
+# Emacs
+*~
+\#*\#
+.\#*
+TAGS
+

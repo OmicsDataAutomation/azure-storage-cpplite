@@ -1,0 +1,77 @@
+name: build
+
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+
+env:
+  CMAKE_BUILD_TYPE: Coverage
+  CMAKE_BUILD_DIR: ${{github.workspace}}/build
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        #os: [ubuntu-20.04, ubuntu-22.04, macOS-11]
+        os: [ubuntu-20.04]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Install Prereqs - Ubuntu
+      if: startsWith(matrix.os,'ubuntu')
+      shell: bash
+      run: |
+        sudo apt-get update -q
+        sudo apt-get -y install cmake lcov
+        sudo apt-get -y install zlib1g-dev libssl-dev uuid-dev libcurl4-openssl-dev
+        mkdir $CMAKE_BUILD_DIR
+
+    - name: Install Prereqs - MacOS
+      if: startsWith(matrix.os, 'macOS')
+      shell: bash
+      run: |
+        brew list cmake &>/dev/null || brew install cmake
+        brew list lcov &>/dev/null || brew install lcov
+        brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
+        mkdir $CMAKE_BUILD_DIR
+
+    - name: Build
+      shell: bash
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
+        make -j4
+        make test
+
+    - name: Launch Azurite
+      shell: bash
+      run: |
+        npm install -g azurite
+        mkdir $CMAKE_BUILD_DIR/azurite
+        echo "*** Azurite version = $(azurite --version)"
+        azurite --silent --loose --location $CMAKE_BUILD_DIR/azurite &
+        
+    - name: Test
+      shell: bash
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
+      run: |
+         # Create container called test as TileDB expects the container to be already created
+         az && echo "Azure CLI installed!" || echo "Azure CLI not FOUND"
+         az storage container create -n test --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+         ./azure-storage-test [blob]
+        
+    - name: Upload Coverage to CodeCov
+      uses: codecov/codecov-action@v3
+      with:
+        gcov: true
+
