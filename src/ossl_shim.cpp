@@ -7,6 +7,33 @@
 
 namespace azure {  namespace storage_lite {
 
+#ifdef __APPLE__
+  std::vector<std::string> dl_paths_ = {"/usr/local/Cellar/lib/", "/usr/local/lib/", "/usr/lib/", ""};
+#elif __linux__
+  std::vector<std::string> dl_paths_ = {"/usr/lib64/", "/usr/lib/", "/usr/lib/x86_64-linux-gnu", ""};
+#else
+#  error Platform not supported
+#endif
+    std::string dl_error_;
+    void* dl_handle = nullptr;
+    unsigned long ossl_ver = 0;
+
+    //Function pointers
+    void* (*hmac_ctx_new_fptr)();
+    int (*hmac_ctx_reset_fptr)(void *);
+    int (*hmac_init_ex_fptr)(void *, const void *, int , const void *, void *);
+    int (*hmac_update_fptr)(void *, const unsigned char *, size_t);
+    int (*hmac_final_fptr)(void *, unsigned char *, unsigned int *);
+    void (*hmac_ctx_free_fptr)(void *);
+    void* (*evp_mac_fetch_fptr)(void *, const char *, const char *);
+    void* (*evp_mac_ctx_new_fptr)(void *);
+    OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_utf8_string_fptr)(const char *, char *, size_t);
+    OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_end_fptr)(void);
+    int (*evp_mac_init_fptr)(void *, const unsigned char *, size_t, const OSSL_PARAM_OSSL3_SHIM []);
+    int (*evp_mac_update_fptr)(void *ctx, const unsigned char *data, size_t datalen);
+    int (*evp_mac_final_fptr)(void *ctx, unsigned char *out, size_t *outl, size_t outsize);
+
+
 		void *get_dlopen_handle(const std::string& name, const std::string& version) {
 		  void *handle = NULL;
 		  std::string prefix("lib");
@@ -45,23 +72,6 @@ namespace azure {  namespace storage_lite {
 		  return get_dlopen_handle(name, "");
 		}
 
-		
-
-    void* dl_handle = nullptr;
-    unsigned long ossl_ver = 0;
-    void* (*hmac_ctx_new_fptr)();
-    int (*hmac_ctx_reset_fptr)(void *);
-    int (*hmac_init_ex_fptr)(void *, const void *, int , const void *, void *);
-    int (*hmac_update_fptr)(void *, const unsigned char *, size_t);
-    int (*hmac_final_fptr)(void *, unsigned char *, unsigned int *);
-    void (*hmac_ctx_free_fptr)(void *);
-    void* (*evp_mac_fetch_fptr)(void *, const char *, const char *);
-    void* (*evp_mac_ctx_new_fptr)(void *);
-    OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_utf8_string_fptr)(const char *, char *, size_t);
-    OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_end_fptr)(void);
-    int (*evp_mac_init_fptr)(void *, const unsigned char *, size_t, const OSSL_PARAM_OSSL3_SHIM []);
-    int (*evp_mac_update_fptr)(void *ctx, const unsigned char *data, size_t datalen);
-    int (*evp_mac_final_fptr)(void *ctx, unsigned char *out, size_t *outl, size_t outsize);
 
 		void ossl_shim_init(void) {
 

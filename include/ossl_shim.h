@@ -19,15 +19,8 @@
 
 namespace azure {  namespace storage_lite {
 
-std::string dl_error_;
-#ifdef __APPLE__
-  std::vector<std::string> dl_paths_ = {"/usr/local/Cellar/lib/", "/usr/local/lib/", "/usr/lib/", ""};
-#elif __linux__
-  std::vector<std::string> dl_paths_ = {"/usr/lib64/", "/usr/lib/", "/usr/lib/x86_64-linux-gnu", ""};
-#else
-#  error Platform not supported
-#endif
     extern void* dl_handle;
+    extern std::string dl_error_;
     extern unsigned long ossl_ver;
 
 		inline void clear_dlerror() {
