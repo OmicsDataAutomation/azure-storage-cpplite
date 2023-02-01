@@ -61,15 +61,23 @@ jobs:
         echo "*** Azurite version = $(azurite --version)"
         azurite --silent --loose --location $CMAKE_BUILD_DIR/azurite &
         
-    - name: Test
+    - name: Test with Azurite
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
       run: |
          # Create container called test as TileDB expects the container to be already created
-         az && echo "Azure CLI installed!" || echo "Azure CLI not FOUND"
+         az && echo "Azure CLI installed!"
          az storage container create -n test --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
          ./azure-storage-test [blob]
-        
+
+    - name: Test
+      shell: bash
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
+      run: ./azure-storage-test
+      env:
+        TEST_CONNECTION_STRING: ${{ secrets.TEST_CONNECTION_STRING }}
+        TEST_ADLS_CONNECTION_STRING: ${{ secrets.TEST_ADLS_CONNECTION_STRING }}
+
     - name: Upload Coverage to CodeCov
       uses: codecov/codecov-action@v3
       with:
