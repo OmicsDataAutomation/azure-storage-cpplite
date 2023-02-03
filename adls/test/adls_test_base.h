@@ -16,10 +16,18 @@ public:
         return client;
     }
 
-    static const std::string& standard_storage_connection_string()
-    {
-        static std::string sscs = "DefaultEndpointsProtocol=https;";
-        return sscs;
+    static const std::string& standard_storage_connection_string() {
+          // see https://learn.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string
+          static std::string sscs;
+          if (sscs.empty()) {
+            char *connection_string = getenv("TEST_ADLS_CONNECTION_STRING");
+            if (connection_string) {
+              sscs = std::string(connection_string);
+            } else {
+              throw std::runtime_error("Specify env variable TEST_ADLS_CONNECTION_STRING and rerun test");
+            }
+          }
+          return sscs;
     }
 
     static std::string create_random_filesystem(azure::storage_adls::adls_client& client)
