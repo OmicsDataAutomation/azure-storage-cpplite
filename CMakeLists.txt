@@ -172,7 +172,7 @@ if(BUILD_TESTS)
 endif()
 
 target_include_directories(azure-storage-lite PUBLIC ${PROJECT_SOURCE_DIR}/include ${CURL_INCLUDE_DIRS} PRIVATE ${EXTRA_INCLUDE_DIRS})
-target_link_libraries(azure-storage-lite Threads::Threads ${CURL_LIBRARIES} ${EXTRA_LIBRARIES})
+target_link_libraries(azure-storage-lite Threads::Threads ${CURL_LIBRARIES} ${EXTRA_LIBRARIES} dl)
 
 if(MSVC)
   target_compile_options(azure-storage-lite PRIVATE /W4 /WX /MP)

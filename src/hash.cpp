@@ -58,6 +58,8 @@ namespace azure {  namespace storage_lite {
           ossl_params_shim[0] = OSSL_PARAM_construct_utf8_string(OSSL_MAC_PARAM_DIGEST, sha256, 0);
  					ossl_params_shim[1] = OSSL_PARAM_construct_end();
           EVP_MAC_init(m_ctx, key.data(), static_cast<int>(key.size()), ossl_params_shim);
+          EVP_MAC_update(m_ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
+          EVP_MAC_final(m_ctx, digest, NULL, digest_length);
 				}
 
 #endif
