@@ -129,7 +129,6 @@ set(AZURE_STORAGE_LITE_SOURCE
   src/blob/blob_client_wrapper.cpp
 )
 
-set_source_files_properties(src/hash.cpp PROPERTIES COMPILE_OPTIONS "-Wno-deprecated-declarations")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
