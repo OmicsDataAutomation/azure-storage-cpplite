@@ -1,6 +1,7 @@
 ignore:
   - "examples/"
   - "test/"
+  - "adls/test"
 
 parsers:
   gcov:

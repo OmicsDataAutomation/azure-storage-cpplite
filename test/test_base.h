@@ -16,13 +16,19 @@ namespace as_test {
         static azure::storage_lite::blob_client& test_blob_client(int size = 1);
 
         static const std::string& standard_storage_connection_string() {
-            // see https://learn.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string
-            // static std::string sscs = "DefaultEndpointsProtocol=https;AccountName=storagesample;AccountKey=<account-key>"
-            //static std::string sscs = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1"; // connection string for azurite
-//            static std::string sscs = "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1"; // connection string for azurite
-            //static std::string sscs = "DefaultEndpointsProtocol=https;AccountName=azureunittest;AccountKey=NCscfboyOy/uu0in73B5ucXJbbsGRWzhSQLYGxuH1mLytJcjobBr0y2ihv1boLFgEcspY0UCTS7A+AStdqpxbg==;EndpointSuffix=core.windows.net";
-            static std::string sscs = "DefaultEndpointsProtocol=https;AccountName=kmslearnblobstorage;AccountKey=OiPEMkG1UHKvdEq10A8MhXR1kR3AKNe7Li6ogJej05fYqIr1ov8C17oLfza/6lKf6UN3g+rozgeo+AStij/K0w==;EndpointSuffix=core.windows.net";
-            return sscs;
+          // see https://learn.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string
+          static std::string sscs;
+          if (sscs.empty()) {
+            char *connection_string = getenv("TEST_CONNECTION_STRING");
+            if (connection_string) {
+              sscs = std::string(connection_string);
+            } else {
+              // connection string for azurite
+              //sscs = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1";
+							sscs = "DefaultEndpointsProtocol=https;AccountName=kmslearnblobstorage;AccountKey=OiPEMkG1UHKvdEq10A8MhXR1kR3AKNe7Li6ogJej05fYqIr1ov8C17oLfza/6lKf6UN3g+rozgeo+AStij/K0w==;EndpointSuffix=core.windows.net";
+            }
+          }
+          return sscs;
         }
 
     protected:
