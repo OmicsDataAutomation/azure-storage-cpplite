@@ -24,8 +24,7 @@ namespace as_test {
               sscs = std::string(connection_string);
             } else {
               // connection string for azurite
-              //sscs = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1";
-							sscs = "DefaultEndpointsProtocol=https;AccountName=kmslearnblobstorage;AccountKey=OiPEMkG1UHKvdEq10A8MhXR1kR3AKNe7Li6ogJej05fYqIr1ov8C17oLfza/6lKf6UN3g+rozgeo+AStij/K0w==;EndpointSuffix=core.windows.net";
+              sscs = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1";
             }
           }
           return sscs;
