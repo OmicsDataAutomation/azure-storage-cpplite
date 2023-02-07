@@ -42,6 +42,9 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
+				cd /usr/local/lib/
+				sudo ln -s /opt/homebrew/Cellar/openssl@1.1/1.1.1q/lib/libcrypto.1.1.dylib libcrypto.dylib
+				sudo ln -s /opt/homebrew/Cellar/openssl@1.1/1.1.1q/lib/libssl.1.1.dylib libssl.dylib
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
