@@ -41,7 +41,6 @@ jobs:
       run: |
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
-#        brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
         brew list openssl &>/dev/null || brew install openssl
         mkdir $CMAKE_BUILD_DIR
 
