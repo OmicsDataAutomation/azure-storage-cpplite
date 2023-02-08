@@ -43,7 +43,7 @@ jobs:
         DYLD_PRINT_LIBRARIES=YES /usr/bin/true 
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
-        brew list openssl &>/dev/null || brew install openssl
+        brew list openssl &>/dev/null || brew install openssl@3.0.7
         ln -s /usr/local/Cellar/openssl@3/3.0.7/lib/libssl.dylib /usr/local/lib/libssl.dylib 
         ln -s /usr/local/Cellar/openssl@3/3.0.7/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib 
         mkdir $CMAKE_BUILD_DIR
