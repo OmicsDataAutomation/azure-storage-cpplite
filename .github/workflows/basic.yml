@@ -1,7 +1,12 @@
 name: build
 
 on:
-  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '**/*.md'
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
 
 env:
   CMAKE_BUILD_TYPE: Coverage
