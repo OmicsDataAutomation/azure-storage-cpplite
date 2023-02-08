@@ -42,10 +42,10 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl &>/dev/null || brew install openssl
-        echo "Santhosh listing the openssl packages"
-        brew list openssl
-        ln -s /usr/local/Cellar/openssl@3/3.0.7/lib/libssl.dylib /usr/local/lib/libssl.dylib 
-        ln -s /usr/local/Cellar/openssl@3/3.0.7/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib 
+        brew list openssl | grep "libcrypto.dylib$"
+        crypto_path = `brew list openssl | | grep "libcrypto.dylib$"`
+        echo "Lib path is $crypto_path"
+        ln -s $crypto_path /usr/local/lib/libcrypto.dylib 
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
