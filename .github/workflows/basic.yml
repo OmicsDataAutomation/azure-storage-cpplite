@@ -40,9 +40,9 @@ jobs:
       shell: bash
       run: |
         echo "Santhosh listing ossl lib"
+        DYLD_PRINT_LIBRARIES=YES /usr/bin/true 
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
-        brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
         brew list openssl &>/dev/null || brew install openssl
         ln -s /usr/local/Cellar/openssl@3/3.0.7/lib/libssl.dylib /usr/local/lib/libssl.dylib 
         ln -s /usr/local/Cellar/openssl@3/3.0.7/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib 
