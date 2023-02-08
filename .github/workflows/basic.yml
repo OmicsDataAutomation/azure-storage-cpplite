@@ -40,12 +40,11 @@ jobs:
       shell: bash
       run: |
         echo "Santhosh listing ossl lib"
-        find / -name "libssl*"
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
-        ln -s /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib /usr/local/lib/libssl.dylib
-        ln -s /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib /usr/local/lib/libcrypto.dylib
+        ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libssl.dylib /usr/local/lib/libssl.dylib
+        ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
