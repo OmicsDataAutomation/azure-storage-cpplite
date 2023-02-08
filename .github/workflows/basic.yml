@@ -35,7 +35,7 @@ jobs:
       shell: bash
       run: |
         echo "Santhosh listing ossl lib"
-        find . -name "libssl*"
+        find / -name "libssl*"
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
