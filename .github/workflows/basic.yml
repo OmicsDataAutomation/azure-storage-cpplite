@@ -43,7 +43,7 @@ jobs:
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl &>/dev/null || brew install openssl
         brew list openssl | grep "libcrypto.dylib$"
-        crypto_path = `brew list openssl | | grep "libcrypto.dylib$"`
+        crypto_path = `brew list openssl | grep "libcrypto.dylib$"`
         echo "Lib path is $crypto_path"
         ln -s $crypto_path /usr/local/lib/libcrypto.dylib 
         mkdir $CMAKE_BUILD_DIR
