@@ -1,6 +1,6 @@
 #include "hash.h"
 #include "base64.h"
-#include "ossl_shim.h"
+#include "openssl_shim.h"
 
 #include <stdexcept>
 

@@ -2,7 +2,7 @@
 #include <cstring>
 #include <stdexcept>
 
-#include "ossl_shim.h"
+#include "openssl_shim.h"
 
 
 namespace azure {  namespace storage_lite {
