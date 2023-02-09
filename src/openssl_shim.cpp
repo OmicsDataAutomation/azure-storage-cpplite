@@ -8,7 +8,7 @@
 namespace azure {  namespace storage_lite {
 
 #ifdef __APPLE__
-std::vector<std::string> dl_paths_ = {"/usr/local/opt/openssl@1.1/lib/", "/usr/local/opt/openssl/lib/", "/usr/local/Cellar/lib/", "/usr/local/lib/", "/usr/lib/", ""};
+std::vector<std::string> dl_paths_ = {"/usr/local/opt/openssl@1.1/", "/usr/local/opt/openssl/lib/", "/usr/local/Cellar/lib/", "/usr/local/lib/", "/usr/lib/", ""};
 #elif __linux__
   std::vector<std::string> dl_paths_ = {"/usr/lib64/", "/usr/lib/", "/usr/lib/x86_64-linux-gnu", ""};
 #else
