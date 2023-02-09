@@ -23,21 +23,21 @@ namespace azure {  namespace storage_lite {
     extern std::string dl_error_;
     extern unsigned long ossl_ver;
 
-		inline void clear_dlerror() {
-		  dl_error_ = std::string("");
-		  dlerror();
-		}
-		
-		inline void set_dlerror() {
-		  char *errmsg = dlerror();
-		  if(errmsg) {
-		    dl_error_.empty() ? (dl_error_ = errmsg) : (dl_error_ += std::string("\n") + errmsg);
-		  }
-		}
+    inline void clear_dlerror() {
+      dl_error_ = std::string("");
+      dlerror();
+    }
+    
+    inline void set_dlerror() {
+      char *errmsg = dlerror();
+      if(errmsg) {
+        dl_error_.empty() ? (dl_error_ = errmsg) : (dl_error_ += std::string("\n") + errmsg);
+      }
+    }
 
-		void ossl_shim_init(void);
-		void *get_dlopen_handle(const std::string& name, const std::string& version); 
-		void *get_dlopen_handle(const std::string& name); 
+    void ossl_shim_init(void);
+    void *get_dlopen_handle(const std::string& name, const std::string& version); 
+    void *get_dlopen_handle(const std::string& name); 
 
 #define BIND_SYMBOL(H, X, Y, Z)  \
   do {                           \
@@ -57,8 +57,8 @@ namespace azure {  namespace storage_lite {
 #define HMAC_Update    HMAC_Update_ossl1_shim
 #define HMAC_Final     HMAC_Final_ossl1_shim
 #define HMAC_CTX_free  HMAC_CTX_free_ossl1_shim
-		void *HMAC_CTX_new_ossl1_shim(void); 
-		int HMAC_CTX_reset_ossl1_shim(void *ctx);
+    void *HMAC_CTX_new_ossl1_shim(void); 
+    int HMAC_CTX_reset_ossl1_shim(void *ctx);
     int HMAC_Init_ex_ossl1_shim(void *ctx, const void *key, int key_len, const void *md, void *impl);
     int HMAC_Update_ossl1_shim(void *ctx, const unsigned char *data, size_t len);
     int HMAC_Final_ossl1_shim(void *ctx, unsigned char *md, unsigned int *len);
@@ -75,26 +75,26 @@ struct ossl_param_ossl3_shim_st {
 };
 
 typedef struct ossl_param_ossl3_shim_st OSSL_PARAM_OSSL3_SHIM;
-#define OSSL_PARAM			OSSL_PARAM_OSSL3_SHIM
+#define OSSL_PARAM      OSSL_PARAM_OSSL3_SHIM
 
-#define OSSL_MAC_PARAM_DIGEST								OSSL_ALG_PARAM_DIGEST_OSSL3_SHIM     /* utf8 string */
+#define OSSL_MAC_PARAM_DIGEST                OSSL_ALG_PARAM_DIGEST_OSSL3_SHIM     /* utf8 string */
 #define OSSL_MAC_PARAM_DIGEST_OSSL3_SHIM    OSSL_ALG_PARAM_DIGEST_OSSL3_SHIM     /* utf8 string */
 #define OSSL_ALG_PARAM_DIGEST_OSSL3_SHIM     "digest"    /* utf8_string */
 
-#define EVP_MAC_fetch 	EVP_MAC_fetch_ossl3_shim
+#define EVP_MAC_fetch   EVP_MAC_fetch_ossl3_shim
 #define EVP_MAC_CTX_new EVP_MAC_CTX_new_ossl3_shim
-#define EVP_MAC_init 		EVP_MAC_init_ossl3_shim
-#define EVP_MAC_update 	EVP_MAC_update_ossl3_shim
-#define EVP_MAC_final 	EVP_MAC_final_ossl3_shim
+#define EVP_MAC_init     EVP_MAC_init_ossl3_shim
+#define EVP_MAC_update   EVP_MAC_update_ossl3_shim
+#define EVP_MAC_final   EVP_MAC_final_ossl3_shim
 #define OSSL_PARAM_construct_utf8_string OSSL_PARAM_construct_utf8_string_ossl3_shim
 #define OSSL_PARAM_construct_end OSSL_PARAM_construct_end_ossl3_shim
-		void* EVP_MAC_fetch_ossl3_shim(void *libctx, const char *algorithm, const char *properties);
-		void* EVP_MAC_CTX_new_ossl3_shim(void *mac);
-		int EVP_MAC_init_ossl3_shim(void *ctx, const unsigned char *key, size_t keylen, const OSSL_PARAM params[]);
-		int EVP_MAC_update_ossl3_shim(void *ctx, const unsigned char *data, size_t datalen);
-		int EVP_MAC_final_ossl3_shim(void *ctx, unsigned char *out, size_t *outl, size_t outsize);
-	  OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_utf8_string_ossl3_shim(const char *key, char *buf, size_t bsize);
-	  OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_end_ossl3_shim(void);
+    void* EVP_MAC_fetch_ossl3_shim(void *libctx, const char *algorithm, const char *properties);
+    void* EVP_MAC_CTX_new_ossl3_shim(void *mac);
+    int EVP_MAC_init_ossl3_shim(void *ctx, const unsigned char *key, size_t keylen, const OSSL_PARAM params[]);
+    int EVP_MAC_update_ossl3_shim(void *ctx, const unsigned char *data, size_t datalen);
+    int EVP_MAC_final_ossl3_shim(void *ctx, unsigned char *out, size_t *outl, size_t outsize);
+    OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_utf8_string_ossl3_shim(const char *key, char *buf, size_t bsize);
+    OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_end_ossl3_shim(void);
 
 
 }}
