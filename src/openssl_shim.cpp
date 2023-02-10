@@ -54,12 +54,12 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
 #else
       std::string path = dl_path + prefix + name;
 #endif
-      std::cout << "SANTHOSH GIVEN LIB NAME IS " << path << "\n";
       if (version.empty()) {
         handle = dlopen( (path + suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
       } else {
 #ifdef __APPLE__
         handle = dlopen((path+"."+version+suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
+      std::cout << "SANTHOSH GIVEN LIB NAME IS " << path+"."+version+suffix << "\n";
 #else
         handle = dlopen((path+suffix+"."+version).c_str(), RTLD_GLOBAL|RTLD_NOW);
 #endif
