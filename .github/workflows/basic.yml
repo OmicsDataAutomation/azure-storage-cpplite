@@ -59,7 +59,7 @@ jobs:
         if [[ !  -z  ${OPENSSL_VERSION} ]]; then
           echo "*** OPENSSL_VERSION found"
           ls -l /usr/local/lib/*
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@${OPENSSL_VERSION} $GITHUB_WORKSPACE
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
