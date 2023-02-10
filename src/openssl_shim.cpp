@@ -1,6 +1,7 @@
 #include <array>
 #include <cstring>
 #include <stdexcept>
+#include <iostream>
 
 #include "openssl_shim.h"
 
