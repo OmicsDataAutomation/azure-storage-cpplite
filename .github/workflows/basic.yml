@@ -45,7 +45,6 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
-        brew unlink openssl
         find /usr/local -name "libcrypto*dylib"
         mkdir $CMAKE_BUILD_DIR
 
