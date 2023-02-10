@@ -49,9 +49,6 @@ jobs:
         brew uninstall --ignore-dependencies openssl
         brew install openssl@${{matrix.openssl-version}}
         find /usr/local -name "libcrypto*dylib"
-        echo "*** Check"
-        ls -l  /usr/local/opt/openssl/lib/*
-        echo "*** Check done"
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
