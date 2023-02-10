@@ -58,9 +58,8 @@ jobs:
         export OPENSSL_VERSION=${{matrix.openssl-version}}
         if [[ !  -z  ${OPENSSL_VERSION} ]]; then
           echo "*** OPENSSL_VERSION found"
-          ls -l /usr/local/opt/openssl*
-          echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> /Users/runner/.bash_profile
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@${OPENSSL_VERSION} $GITHUB_WORKSPACE
+          ls -l /usr/local/lib/*
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@${OPENSSL_VERSION} $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
