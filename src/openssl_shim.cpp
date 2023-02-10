@@ -47,39 +47,43 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
     
     clear_dlerror();
     for (std::string dl_path : dl_paths_) {
-    std::string path = dl_path+prefix+name;
-    if (version.empty()) {
-      handle = dlopen((path+suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
-    } else {
 #ifdef __APPLE__
-      handle = dlopen((path+"."+version+suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
+  //For Mac OS 11 & above giving path to lib is not allowed
+      std::string path = prefix + name;
 #else
-      handle = dlopen((path+suffix+"."+version).c_str(), RTLD_GLOBAL|RTLD_NOW);
+      std::string path = dl_path + prefix + name;
 #endif
-    }   
-    if (handle) {
-      clear_dlerror();
-      return handle;
-    } else {
-      set_dlerror();
-    }   
+      if (version.empty()) {
+        handle = dlopen( (path + suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
+      } else {
+#ifdef __APPLE__
+        handle = dlopen((path+"."+version+suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
+#else
+        handle = dlopen((path+suffix+"."+version).c_str(), RTLD_GLOBAL|RTLD_NOW);
+#endif
+      }   
+      if (handle) {
+        clear_dlerror();
+        return handle;
+      } else {
+        set_dlerror();
+      }   
     }   
   
     return handle;
   }
   
   void *get_dlopen_handle(const std::string& name) {
-/*
+
 #ifdef __APPLE__
     void *handle =  get_dlopen_handle(name, "3");
     if (!handle) {
-     handle = get_dlopen_handle(name, "1.1");
+      handle = get_dlopen_handle(name, "1.1");
     }
 #else
     void *handle = get_dlopen_handle(name, "");
 #endif
-*/
-    void *handle = get_dlopen_handle(name, "");
+
     return handle;
   }
 
@@ -90,7 +94,7 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
       if(!dl_handle) {
         throw std::runtime_error("libcrypto.so is not loaded in the system");
       }
-    	ossl_ver = OpenSSL_version_num();
+      ossl_ver = OpenSSL_version_num();
       if(ossl_ver < 0x30000000L) {
         BIND_SYMBOL(dl_handle, hmac_ctx_new_fptr, "HMAC_CTX_new", (void*(*)(void)) );
         BIND_SYMBOL(dl_handle, hmac_ctx_reset_fptr, "HMAC_CTX_reset", (int(*)(void*)) );
