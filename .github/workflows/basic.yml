@@ -48,7 +48,11 @@ jobs:
         brew uninstall --ignore-dependencies openssl@1.1
         # brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
         brew install openssl@${{matrix.openssl-version}}
+        echo "Now print find /usr/local libcrypto"
         find /usr/local -name "libcrypto*dylib"
+        echo "Printing openssl 1.1.1 dir content"
+        ls /usr/local/Cellar/openssl@1.1/1.1.1s/
+        echo "KMS done"
         ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libssl.dylib /usr/local/lib/libssl.dylib 
         ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib 
         mkdir $CMAKE_BUILD_DIR
@@ -60,7 +64,9 @@ jobs:
         export OPENSSL_VERSION=${{matrix.openssl-version}}
         if [[ !  -z  ${OPENSSL_VERSION} ]]; then
           echo "*** OPENSSL_VERSION found"
-          ls -l /usr/local/lib/*
+          echo "Printing contents of usr local opt"
+          ls -l /usr/local/opt/*
+          echo "Done123"
           cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
