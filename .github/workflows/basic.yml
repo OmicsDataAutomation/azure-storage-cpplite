@@ -16,7 +16,12 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macOS-10.15, macOS-11]
+        os: [ubuntu-20.04, ubuntu-22.04]
+        include:
+          - os: macOS-11
+            openssl-version: 3
+          - os: macOS-11
+            openssl-version: 1.1
 
     runs-on: ${{ matrix.os }}
 
@@ -41,18 +46,25 @@ jobs:
       run: |
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
-        brew list openssl &>/dev/null || brew install openssl
-        echo "list ossl folders"
-        ls -l /usr/local/opt/*
-        ls -l /usr/local/opt/openssl/lib/*
-        echo "done"
+        brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
+        brew unlink openssl
+        brew link --overwrite openssl@1.1
+        find /usr/local -name "libcrypto*dylib"
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
       run: |
+        export OPENSSL_VERSION=${{matrix.openssl-version}}
+        if [[ !  -z  ${OPENSSL_VERSION} ]]; then
+          echo "*** OPENSSL_VERSION found"
+          ls -l /usr/local/opt/openssl*
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@${OPENSSL_VERSION} $GITHUB_WORKSPACE
+        else
+          echo "*** OPENSSL_VERSION NOT found"
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
+        fi
         make -j4
         make test
 
@@ -64,15 +76,23 @@ jobs:
         echo "*** Azurite version = $(azurite --version)"
         azurite --silent --loose --location $CMAKE_BUILD_DIR/azurite &
         
-    - name: Test
+    - name: Test with Azurite
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
       run: |
          # Create container called test as TileDB expects the container to be already created
-         az && echo "Azure CLI installed!" || echo "Azure CLI not FOUND"
+         az && echo "Azure CLI installed!"
          az storage container create -n test --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
          ./azure-storage-test [blob]
-        
+
+    - name: Test
+      shell: bash
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
+      run: ./azure-storage-test
+      env:
+        TEST_CONNECTION_STRING: ${{ secrets.TEST_CONNECTION_STRING }}
+        TEST_ADLS_CONNECTION_STRING: ${{ secrets.TEST_ADLS_CONNECTION_STRING }}
+
     - name: Upload Coverage to CodeCov
       uses: codecov/codecov-action@v3
       with:
