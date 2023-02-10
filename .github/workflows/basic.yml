@@ -45,7 +45,9 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew uninstall --ignore-dependencies openssl@3
-        brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
+        brew uninstall --ignore-dependencies openssl@1.1
+        # brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
+        brew install openssl@${{matrix.openssl-version}}
         find /usr/local -name "libcrypto*dylib"
         ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libssl.dylib /usr/local/lib/libssl.dylib 
         ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib 
