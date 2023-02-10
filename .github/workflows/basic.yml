@@ -49,8 +49,9 @@ jobs:
         brew cleanup --prune-prefix
         # brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
         # brew install openssl@${{matrix.openssl-version}}
+        echo "KMS printing path"
         brew list openssl@1.1 | grep "libcrypto.dylib$"
-        crypto_path=`brew list openssl | grep "libcrypto.dylib$"`
+        crypto_path=`brew list openssl@1.1 | grep "libcrypto.dylib$"`
         echo "Lib path is $crypto_path"
         echo "KMS done"
         ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libssl.dylib /usr/local/lib/libssl.dylib 
