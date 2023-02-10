@@ -54,8 +54,8 @@ jobs:
         crypto_path=`brew list openssl@1.1 | grep "libcrypto.dylib$"`
         echo "Lib path is $crypto_path"
         echo "KMS done"
-        ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libssl.dylib /usr/local/lib/libssl.dylib 
-        ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib 
+        # ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libssl.dylib /usr/local/lib/libssl.dylib 
+        # ln -s /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib 
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
