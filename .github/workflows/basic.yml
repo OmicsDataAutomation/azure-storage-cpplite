@@ -45,9 +45,10 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew uninstall --ignore-dependencies openssl@3
-        brew uninstall --ignore-dependencies openssl@1.1
+        brew cleanup -s openssl@3
+        brew cleanup --prune-prefix
         # brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
-        brew install openssl@${{matrix.openssl-version}}
+        # brew install openssl@${{matrix.openssl-version}}
         brew list openssl | grep "libcrypto.dylib$"
         crypto_path=`brew list openssl | grep "libcrypto.dylib$"`
         echo "Lib path is $crypto_path"
