@@ -58,8 +58,8 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
         handle = dlopen( (path + suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
       } else {
 #ifdef __APPLE__
-        handle = dlopen((path+"."+version+suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
       std::cout << "SANTHOSH GIVEN LIB NAME IS " << path+"."+version+suffix << "\n";
+        handle = dlopen((path+"."+version+suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
 #else
         handle = dlopen((path+suffix+"."+version).c_str(), RTLD_GLOBAL|RTLD_NOW);
 #endif
@@ -94,7 +94,7 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
     if(dl_handle == nullptr) {
       dl_handle = get_dlopen_handle("crypto");
       if(!dl_handle) {
-        throw std::runtime_error("libcrypto.so is not loaded in the system");
+        throw std::runtime_error("libcrypto is not present in the system");
       }
       ossl_ver = OpenSSL_version_num();
       if(ossl_ver < 0x30000000L) {
