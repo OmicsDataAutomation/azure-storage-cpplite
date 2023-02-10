@@ -46,7 +46,7 @@ jobs:
       run: |
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
-        brew uninstall openssl
+        brew uninstall --ignore-dependencies openssl
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
         find /usr/local -name "libcrypto*dylib"
         echo "*** Check"
