@@ -77,6 +77,7 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
   
   void *get_dlopen_handle(const std::string& name) {
 
+/*
 #ifdef __APPLE__
     void *handle =  get_dlopen_handle(name, "3");
     if (!handle) {
@@ -85,6 +86,8 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
 #else
     void *handle = get_dlopen_handle(name, "");
 #endif
+*/
+    void *handle = get_dlopen_handle(name, "");
 
     return handle;
   }
