@@ -44,14 +44,9 @@ jobs:
       run: |
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
-
-        brew uninstall --ignore-dependencies openssl@3
-        brew cleanup -s openssl@3
-        brew cleanup --prune-prefix
-
-        brew list openssl@1.1 | grep "libcrypto.dylib$"
-        echo "Print lib cryptos"
-        find /usr/local/ -name "libcrypto*"
+        brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
+        crypto_path=`brew list openssl@${{matrix.openssl-version}} | grep "libcrypto.dylib$"`
+        ossl_root=dirname @crypto_path | xargs dirname
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
@@ -60,7 +55,7 @@ jobs:
       run: |
         export OPENSSL_VERSION=${{matrix.openssl-version}}
         if [[ !  -z  ${OPENSSL_VERSION} ]]; then
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@${OPENSSL_VERSION} $GITHUB_WORKSPACE
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE

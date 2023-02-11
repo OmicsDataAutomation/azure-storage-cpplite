@@ -9,7 +9,7 @@
 namespace azure {  namespace storage_lite {
 
 #ifdef __APPLE__
-std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "/usr/local/opt/openssl/lib/", "/usr/local/Cellar/lib/", "/usr/local/lib/", "/usr/lib/", ""};
+  std::vector<std::string> dl_paths_ = {"/usr/local/Cellar/lib/", "/usr/local/lib/", "/usr/lib/", ""};
 #elif __linux__
   std::vector<std::string> dl_paths_ = {"/usr/lib64/", "/usr/lib/", "/usr/lib/x86_64-linux-gnu", ""};
 #else
@@ -58,7 +58,6 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
         handle = dlopen( (path + suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
       } else {
 #ifdef __APPLE__
-      std::cout << "SANTHOSH GIVEN LIB NAME IS " << path+"."+version+suffix << "\n";
         handle = dlopen((path+"."+version+suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
 #else
         handle = dlopen((path+suffix+"."+version).c_str(), RTLD_GLOBAL|RTLD_NOW);
@@ -76,20 +75,7 @@ std::vector<std::string> dl_paths_ = {"@rpath", "/usr/local/opt/openssl@1.1/", "
   }
   
   void *get_dlopen_handle(const std::string& name) {
-
-/*
-#ifdef __APPLE__
-    void *handle =  get_dlopen_handle(name, "3");
-    if (!handle) {
-      handle = get_dlopen_handle(name, "1.1");
-    }
-#else
-    void *handle = get_dlopen_handle(name, "");
-#endif
-*/
-    void *handle = get_dlopen_handle(name, "");
-
-    return handle;
+    return get_dlopen_handle(name, "");
   }
 
 
