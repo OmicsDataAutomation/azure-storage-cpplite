@@ -70,9 +70,7 @@ jobs:
           echo "Path of crypto lib $crypto_lib_path"
           temp_root=$(dirname $crypto_lib_path) 
           export ossl_root=$(dirname "$temp_root") 
-          echo "Root dir of ossl $ossl_root"
-          echo "Printing again Root dir of ossl $ossl_root"
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root -DOPENSSL_INCLUDE_DIR=$ossl_root/include -DOPENSSL_LIBRARIES=$ossl_root/lib $GITHUB_WORKSPACE
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
