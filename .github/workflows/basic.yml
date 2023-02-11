@@ -46,7 +46,8 @@ jobs:
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
         crypto_lib_path=`brew list openssl@${{matrix.openssl-version}} | grep "libcrypto.dylib$"`
-        echo "Path of crypto lib $crypto_path"
+        ln -s $crypto_lib_path /usr/local/lib/libcrypto.dylib 
+        echo "Path of crypto lib $crypto_lib_path"
         temp_root=$(dirname $crypto_lib_path) 
         ossl_root=$(dirname "$temp_root") 
         echo "Root dir of ossl $ossl_root"
