@@ -45,8 +45,11 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
-        crypto_path=`brew list openssl@${{matrix.openssl-version}} | grep "libcrypto.dylib$"`
-        ossl_root=dirname $crypto_path | xargs dirname
+        crypto_lib_path=`brew list openssl@${{matrix.openssl-version}} | grep "libcrypto.dylib$"`
+        echo "Path of crypto lib $crypto_path"
+        temp_root=$(dirname $crypto_lib_path) 
+        ossl_root=$(dirname "$temp_root") 
+        echo "Root dir of ossl $ossl_root"
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
@@ -55,6 +58,7 @@ jobs:
       run: |
         export OPENSSL_VERSION=${{matrix.openssl-version}}
         if [[ !  -z  ${OPENSSL_VERSION} ]]; then
+          echo "Printing again Root dir of ossl $ossl_root"
           cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
