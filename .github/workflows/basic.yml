@@ -46,7 +46,7 @@ jobs:
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
         crypto_path=`brew list openssl@${{matrix.openssl-version}} | grep "libcrypto.dylib$"`
-        ossl_root=dirname @crypto_path | xargs dirname
+        ossl_root=dirname $crypto_path | xargs dirname
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
