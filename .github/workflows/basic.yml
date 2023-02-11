@@ -57,12 +57,6 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
-        crypto_lib_path=`brew list openssl@${{matrix.openssl-version}} | grep "libcrypto.dylib$"`
-        ln -s $crypto_lib_path /usr/local/lib/libcrypto.dylib 
-        echo "Path of crypto lib $crypto_lib_path"
-        temp_root=$(dirname $crypto_lib_path) 
-        export ossl_root=$(dirname "$temp_root") 
-        echo "Root dir of ossl $ossl_root"
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build
@@ -71,8 +65,14 @@ jobs:
       run: |
         export OPENSSL_VERSION=${{matrix.openssl-version}}
         if [[ !  -z  ${OPENSSL_VERSION} ]]; then
+          crypto_lib_path=`brew list openssl@${{matrix.openssl-version}} | grep "libcrypto.dylib$"`
+          ln -s $crypto_lib_path /usr/local/lib/libcrypto.dylib 
+          echo "Path of crypto lib $crypto_lib_path"
+          temp_root=$(dirname $crypto_lib_path) 
+          export ossl_root=$(dirname "$temp_root") 
+          echo "Root dir of ossl $ossl_root"
           echo "Printing again Root dir of ossl $ossl_root"
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root -DOPENSSL_INCLUDE_DIR=$ossl_root/include -DOPENSSL_LIBRARIES=$ossl_root/lib $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
