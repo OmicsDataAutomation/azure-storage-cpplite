@@ -19,6 +19,8 @@ jobs:
         os: [ubuntu-20.04, ubuntu-22.04]
         include:
           - os: macOS-11
+            openssl-version: 3
+          - os: macOS-11
             openssl-version: 1.1
 
     runs-on: ${{ matrix.os }}
@@ -39,7 +41,7 @@ jobs:
         mkdir $CMAKE_BUILD_DIR
 
     - name: Install Prereqs - MacOS
-      if: startsWith(matrix.os, 'macOS') && (matrix.version == 1.1)
+      if: startsWith(matrix.os, 'macOS') && (matrix.openssl-version == 1.1)
       shell: bash
       run: |
         echo "Uninstalling OpenSSL3"
