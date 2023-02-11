@@ -72,7 +72,7 @@ jobs:
         export OPENSSL_VERSION=${{matrix.openssl-version}}
         if [[ !  -z  ${OPENSSL_VERSION} ]]; then
           echo "Printing again Root dir of ossl $ossl_root"
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root -DOPENSSL_INCLUDE_DIR=$ossl_root/include -DOPENSSL_LIBRARIES=$ossl_root/lib $GITHUB_WORKSPACE
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
