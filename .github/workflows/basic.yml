@@ -40,7 +40,7 @@ jobs:
         sudo apt-get -y install zlib1g-dev libssl-dev uuid-dev libcurl4-openssl-dev
         mkdir $CMAKE_BUILD_DIR
 
-    - name: Install Prereqs - MacOS
+    - name: Install Prereqs - MacOS and OpenSSL Version 1.1
       if: startsWith(matrix.os, 'macOS') && (matrix.openssl-version == 1.1)
       shell: bash
       run: |
@@ -61,7 +61,7 @@ jobs:
         ln -s $crypto_lib_path /usr/local/lib/libcrypto.dylib 
         echo "Path of crypto lib $crypto_lib_path"
         temp_root=$(dirname $crypto_lib_path) 
-        ossl_root=$(dirname "$temp_root") 
+        export ossl_root=$(dirname "$temp_root") 
         echo "Root dir of ossl $ossl_root"
         mkdir $CMAKE_BUILD_DIR
 
@@ -72,7 +72,7 @@ jobs:
         export OPENSSL_VERSION=${{matrix.openssl-version}}
         if [[ !  -z  ${OPENSSL_VERSION} ]]; then
           echo "Printing again Root dir of ossl $ossl_root"
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root $GITHUB_WORKSPACE
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root -DOPENSSL_INCLUDE_DIR=$ossl_root/include -DOPENSSL_LIBRARIES=$ossl_root/lib $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
