@@ -48,12 +48,7 @@ namespace azure {  namespace storage_lite {
     
     clear_dlerror();
     for (std::string dl_path : dl_paths_) {
-#ifdef __APPLE__
-  //For Mac OS 11 & above giving path to lib is not allowed
-      std::string path = prefix + name;
-#else
       std::string path = dl_path + prefix + name;
-#endif
       if (version.empty()) {
         handle = dlopen( (path + suffix).c_str(), RTLD_GLOBAL|RTLD_NOW);
       } else {
