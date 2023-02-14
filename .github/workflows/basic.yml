@@ -59,7 +59,18 @@ jobs:
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
         mkdir $CMAKE_BUILD_DIR
 
-    - name: Build
+    - name: Build on Ubuntu
+      if: startsWith(matrix.os, 'ubuntu')
+      shell: bash
+      working-directory: ${{env.CMAKE_BUILD_DIR}}
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
+        make -j4
+        make test
+
+
+    - name: Build on MacOS
+      if: startsWith(matrix.os, 'macOS')
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
       run: |
@@ -73,10 +84,11 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root $GITHUB_WORKSPACE
         else
           echo "*** OPENSSL_VERSION NOT found"
-        cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
+          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
         fi
         make -j4
         make test
+
 
     - name: Launch Azurite
       shell: bash
