@@ -40,6 +40,8 @@ set(AZURE_STORAGE_LITE_HEADER
 
   include/json_parser_base.h
 
+  include/openssl_shim.h
+
   include/storage_account.h
   include/storage_credential.h
   include/storage_outcome.h
@@ -101,6 +103,8 @@ set(AZURE_STORAGE_LITE_SOURCE
   src/tinyxml2.cpp
   src/tinyxml2_parser.cpp
 
+  src/openssl_shim.cpp
+
   src/storage_account.cpp
   src/storage_credential.cpp
   src/storage_url.cpp
@@ -130,7 +134,6 @@ set(AZURE_STORAGE_LITE_SOURCE
   src/blob/blob_client_wrapper.cpp
 )
 
-set_source_files_properties(src/hash.cpp PROPERTIES COMPILE_OPTIONS "-Wno-deprecated-declarations")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -173,7 +176,7 @@ if(BUILD_TESTS)
 endif()
 
 target_include_directories(azure-storage-lite PUBLIC ${PROJECT_SOURCE_DIR}/include ${CURL_INCLUDE_DIRS} PRIVATE ${EXTRA_INCLUDE_DIRS})
-target_link_libraries(azure-storage-lite Threads::Threads ${CURL_LIBRARIES} ${EXTRA_LIBRARIES})
+target_link_libraries(azure-storage-lite Threads::Threads ${CURL_LIBRARIES} ${EXTRA_LIBRARIES} ${CMAKE_DL_LIBS})
 
 if(MSVC)
   target_compile_options(azure-storage-lite PRIVATE /W4 /WX /MP)
