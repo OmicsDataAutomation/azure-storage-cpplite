@@ -47,7 +47,7 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
-        if [[ ${{matrix.openssl-version}} == 1.1* ]]; then
+        if [[ ${{matrix.openssl-version}} == 1.1 ]]; then
           echo "Uninstalling OpenSSL3"
           brew uninstall --ignore-dependencies openssl@3
           brew cleanup -s openssl@3
