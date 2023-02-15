@@ -40,16 +40,6 @@ jobs:
         sudo apt-get -y install zlib1g-dev libssl-dev uuid-dev libcurl4-openssl-dev
         mkdir $CMAKE_BUILD_DIR
 
-    - name: Install Prereqs - MacOS and OpenSSL Version 1.1
-      if: startsWith(matrix.os, 'macOS') && (matrix.openssl-version == 1.1)
-      shell: bash
-      run: |
-        echo "Uninstalling OpenSSL3"
-        brew uninstall --ignore-dependencies openssl@3
-        brew cleanup -s openssl@3
-        brew cleanup --prune-prefix
-
-
     - name: Install Prereqs - MacOS
       if: startsWith(matrix.os, 'macOS')
       shell: bash
@@ -57,6 +47,12 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
+        if [[ ${{matrix.openssl-version}} == 1.1* ]]; then
+          echo "Uninstalling OpenSSL3"
+          brew uninstall --ignore-dependencies openssl@3
+          brew cleanup -s openssl@3
+          brew cleanup --prune-prefix
+        fi
         mkdir $CMAKE_BUILD_DIR
 
     - name: Build on Ubuntu
