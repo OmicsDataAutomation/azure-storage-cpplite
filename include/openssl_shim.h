@@ -83,21 +83,26 @@ typedef struct ossl_param_ossl3_shim_st OSSL_PARAM_OSSL3_SHIM;
 #define OSSL_MAC_PARAM_DIGEST_OSSL3_SHIM   OSSL_ALG_PARAM_DIGEST_OSSL3_SHIM   /* utf8 string */
 #define OSSL_ALG_PARAM_DIGEST_OSSL3_SHIM   "digest"    /* utf8_string */
 
-#define EVP_MAC_fetch 	 EVP_MAC_fetch_ossl3_shim
+#define EVP_MAC_fetch    EVP_MAC_fetch_ossl3_shim
 #define EVP_MAC_CTX_new  EVP_MAC_CTX_new_ossl3_shim
 #define EVP_MAC_CTX_free EVP_MAC_CTX_free_ossl3_shim
-#define EVP_MAC_init 		 EVP_MAC_init_ossl3_shim
-#define EVP_MAC_update 	 EVP_MAC_update_ossl3_shim
-#define EVP_MAC_final 	 EVP_MAC_final_ossl3_shim
+#define EVP_MAC_init     EVP_MAC_init_ossl3_shim
+#define EVP_MAC_update   EVP_MAC_update_ossl3_shim
+#define EVP_MAC_final    EVP_MAC_final_ossl3_shim
 #define OSSL_PARAM_construct_utf8_string OSSL_PARAM_construct_utf8_string_ossl3_shim
 #define OSSL_PARAM_construct_end OSSL_PARAM_construct_end_ossl3_shim
-		void* EVP_MAC_fetch_ossl3_shim(void *libctx, const char *algorithm, const char *properties);
-		void* EVP_MAC_CTX_new_ossl3_shim(void *mac);
-    void EVP_MAC_CTX_free_ossl3_shim(void *ctx);
-		int EVP_MAC_init_ossl3_shim(void *ctx, const unsigned char *key, size_t keylen, const OSSL_PARAM params[]);
-		int EVP_MAC_update_ossl3_shim(void *ctx, const unsigned char *data, size_t datalen);
-		int EVP_MAC_final_ossl3_shim(void *ctx, unsigned char *out, size_t *outl, size_t outsize);
-	  OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_utf8_string_ossl3_shim(const char *key, char *buf, size_t bsize);
-	  OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_end_ossl3_shim(void);
+  void* EVP_MAC_fetch_ossl3_shim(void *libctx, const char *algorithm, 
+      const char *properties);
+  void* EVP_MAC_CTX_new_ossl3_shim(void *mac);
+  void EVP_MAC_CTX_free_ossl3_shim(void *ctx);
+  int EVP_MAC_init_ossl3_shim(void *ctx, const unsigned char *key, 
+      size_t keylen, const OSSL_PARAM params[]);
+  int EVP_MAC_update_ossl3_shim(void *ctx, const unsigned char *data, 
+      size_t datalen);
+  int EVP_MAC_final_ossl3_shim(void *ctx, unsigned char *out, size_t *outl, 
+      size_t outsize);
+  OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_utf8_string_ossl3_shim(
+      const char *key, char *buf, size_t bsize);
+  OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_end_ossl3_shim(void);
 
 }}
