@@ -27,6 +27,7 @@ namespace azure {  namespace storage_lite {
     void (*hmac_ctx_free_fptr)(void *);
     void* (*evp_mac_fetch_fptr)(void *, const char *, const char *);
     void* (*evp_mac_ctx_new_fptr)(void *);
+    void (*evp_mac_ctx_free_fptr)(void *);
     OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_utf8_string_fptr)(const char *, char *, size_t);
     OSSL_PARAM_OSSL3_SHIM (*ossl_param_construct_end_fptr)(void);
     int (*evp_mac_init_fptr)(void *, const unsigned char *, size_t, const OSSL_PARAM_OSSL3_SHIM []);
@@ -131,6 +132,10 @@ namespace azure {  namespace storage_lite {
 
 		void* EVP_MAC_CTX_new_ossl3_shim(void *mac) {
 				return ((*evp_mac_ctx_new_fptr)(mac));
+    }
+
+		void EVP_MAC_CTX_free_ossl3_shim(void *mac) {
+				((*evp_mac_ctx_free_fptr)(mac));
     }
 
 	  OSSL_PARAM_OSSL3_SHIM OSSL_PARAM_construct_utf8_string_ossl3_shim(const char *key, char *buf, size_t bsize) {
