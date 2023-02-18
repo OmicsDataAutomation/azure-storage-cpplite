@@ -33,7 +33,7 @@ namespace azure {  namespace storage_lite {
         BCryptDestroyHash(hash_handle);
 #else
 #ifdef USE_OPENSSL
-				ossl_shim_init();
+        ossl_shim_init();
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
         HMAC_CTX ctx;
         HMAC_CTX_init(&ctx);
@@ -42,25 +42,25 @@ namespace azure {  namespace storage_lite {
         HMAC_Final(&ctx, digest, &digest_length);
         HMAC_CTX_cleanup(&ctx);
 #else
-				if(ossl_ver < 0x30000000L ) {
-        	void* ctx = HMAC_CTX_new();
-        	HMAC_CTX_reset(ctx);
-        	HMAC_Init_ex(ctx, key.data(), static_cast<int>(key.size()), EVP_sha256(), NULL);
-        	HMAC_Update(ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
-        	HMAC_Final(ctx, digest, &digest_length);
-        	HMAC_CTX_free(ctx); }
-				else{
+        if(ossl_ver < 0x30000000L ) {
+          void* ctx = HMAC_CTX_new();
+          HMAC_CTX_reset(ctx);
+          HMAC_Init_ex(ctx, key.data(), static_cast<int>(key.size()), EVP_sha256(), NULL);
+          HMAC_Update(ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
+          HMAC_Final(ctx, digest, &digest_length);
+          HMAC_CTX_free(ctx); }
+        else{
           void* mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
           void* m_ctx = EVP_MAC_CTX_new(mac);
-	        char sha256[] {"SHA256"};
+          char sha256[] {"SHA256"};
           OSSL_PARAM_OSSL3_SHIM ossl_params_shim[2];
 
           ossl_params_shim[0] = OSSL_PARAM_construct_utf8_string(OSSL_MAC_PARAM_DIGEST, sha256, 0);
- 					ossl_params_shim[1] = OSSL_PARAM_construct_end();
+          ossl_params_shim[1] = OSSL_PARAM_construct_end();
           EVP_MAC_init(m_ctx, key.data(), static_cast<int>(key.size()), ossl_params_shim);
           EVP_MAC_update(m_ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
           EVP_MAC_final(m_ctx, digest, NULL, digest_length);
-				}
+        }
 
 #endif
 #else
