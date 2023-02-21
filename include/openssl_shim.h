@@ -62,9 +62,9 @@ namespace azure {  namespace storage_lite {
     MD5_LONG_OSSL1_SHIM Nl, Nh; 
     MD5_LONG_OSSL1_SHIM data[MD5_LBLOCK_OSSL1_SHIM];
     unsigned int num;
-  } MD5_CTX_OSSL_SHIM;
+  } MD5_CTX_OSSL1_SHIM;
 
-#define MD5_CTX MD5_CTX_OSSL_SHIM;
+#define MD5_CTX MD5_CTX_OSSL1_SHIM;
 
 
 #define HMAC_CTX_new   HMAC_CTX_new_ossl1_shim
