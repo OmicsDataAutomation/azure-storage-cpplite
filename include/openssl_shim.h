@@ -76,6 +76,10 @@ namespace azure {  namespace storage_lite {
 #define MD5_Init       MD5_Init_ossl1_shim
 #define MD5_Update     MD5_Update_ossl1_shim
 #define MD5_Final      MD5_Final_ossl1_shim
+#define SHA256_Init    SHA256_Init_ossl1_shim
+#define SHA256_Final   SHA256_Final_ossl1_shim
+#define SHA256_Update  SHA256_Update_ossl1_shim
+
 
   void *HMAC_CTX_new_ossl1_shim(void); 
   int HMAC_CTX_reset_ossl1_shim(void *ctx);
@@ -89,6 +93,9 @@ namespace azure {  namespace storage_lite {
   int MD5_Update_ossl1_shim(void *c, const void *data, size_t len);
   int MD5_Final_ossl1_shim(unsigned char *md, void *c);
 
+  int SHA256_Init_ossl1_shim(void *c);
+  int SHA256_Final_ossl1_shim(unsigned char *md, void *c);
+  int SHA256_Update_ossl1_shim(void *c, const void *data, size_t len);
 
   //OpenSSL3 functions redirected to call dynamically using the below functions
   struct ossl_param_ossl3_shim_st {
@@ -119,6 +126,7 @@ namespace azure {  namespace storage_lite {
 #define EVP_MD_CTX_free     EVP_MD_CTX_free_ossl3_shim
 #define EVP_md5             EVP_md5_ossl3_shim
 #define EVP_MD_CTX_new      EVP_MD_CTX_new_ossl3_shim
+#define EVP_sha256          EVP_sha256_ossl3_shim
 #define OSSL_PARAM_construct_utf8_string OSSL_PARAM_construct_utf8_string_ossl3_shim
 #define OSSL_PARAM_construct_end OSSL_PARAM_construct_end_ossl3_shim
 
@@ -142,5 +150,6 @@ namespace azure {  namespace storage_lite {
   void EVP_MD_CTX_free_ossl3_shim(void *ctx);
   const void* EVP_md5_ossl3_shim(void);
   void* EVP_MD_CTX_new_ossl3_shim(void);
+  const void* EVP_sha256_ossl3_shim(void);
 
 }}
