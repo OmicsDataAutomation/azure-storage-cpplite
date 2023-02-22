@@ -31,6 +31,9 @@ namespace azure {  namespace storage_lite {
   int (*md5_init_fptr)(void *);
   int (*md5_update_fptr)(void *, const void *, size_t);
   int (*md5_final_fptr)(unsigned char *, void *);
+  int (*sha256_init_fptr)(void*);
+  int (*sha256_final_fptr)(unsigned char *, void*);
+  int (*sha256_update_fptr)(void*, const void *, size_t);
 
   //OpenSSL3 function pointers
   void* (*evp_mac_fetch_fptr)(void *, const char *, const char *);
@@ -50,6 +53,7 @@ namespace azure {  namespace storage_lite {
   void (*evp_md_ctx_free_fptr)(void *);
   const void* (*evp_md5_fptr)(void);
   void* (*evp_md_ctx_new_fptr)(void);
+  const void* (*evp_sha256_fptr)(void);
 
 
   void *get_dlopen_handle(const std::string& name, const std::string& version) {
@@ -116,7 +120,12 @@ namespace azure {  namespace storage_lite {
             (int(*)(void *, const void *, size_t)) );
         BIND_SYMBOL(dl_handle, md5_final_fptr, "MD5_Final", 
             (int(*)(unsigned char *, void *)) );
-
+        BIND_SYMBOL(dl_handle, sha256_init_fptr, "SHA256_Init", 
+            (int (*)(void*)));
+        BIND_SYMBOL(dl_handle, sha256_final_fptr, "SHA256_Final", 
+            (int (*)(unsigned char *, void*)));
+        BIND_SYMBOL(dl_handle, sha256_update_fptr, "SHA256_Update",  
+            (int (*)(void*, const void *, size_t)));
       } else {
         BIND_SYMBOL(dl_handle, evp_mac_fetch_fptr, "EVP_MAC_fetch", 
             (void*(*)(void *, const char *, const char *)) );
@@ -147,6 +156,8 @@ namespace azure {  namespace storage_lite {
         BIND_SYMBOL(dl_handle, evp_md5_fptr, "EVP_md5", (const void*(*)(void)));
         BIND_SYMBOL(dl_handle, evp_md_ctx_new_fptr, "EVP_MD_CTX_new", 
             (void* (*)(void)) );
+        BIND_SYMBOL(dl_handle, evp_sha256_fptr, "EVP_sha256", 
+            (const void* (*)(void)));
       }
     }
   }
@@ -188,8 +199,20 @@ namespace azure {  namespace storage_lite {
     return ((*md5_final_fptr)(md, c));
   }
 
+  int SHA256_Init_ossl1_shim(void *c) {
+    return ((*sha256_init_fptr)(c));
+  }
 
-  //OopenSSL3 wrapper functions
+  int SHA256_Final_ossl1_shim(unsigned char *md, void *c) {
+    return ((*sha256_final_fptr)(md, c));
+  }
+
+  int SHA256_Update_ossl1_shim(void *c, const void *data, size_t len) {
+    return ((*sha256_update_fptr)(c, data, len));
+  }
+
+
+  //OpenSSL3 wrapper functions
   void* EVP_MAC_fetch_ossl3_shim(void *libctx, const char *algorithm, 
       const char *properties) {
     return ((*evp_mac_fetch_fptr)(libctx, algorithm, properties));
@@ -217,11 +240,13 @@ namespace azure {  namespace storage_lite {
     return ((*evp_mac_init_fptr)(ctx, key, keylen, params));
   }
 
-  int EVP_MAC_update_ossl3_shim(void *ctx, const unsigned char *data, size_t datalen) {
+  int EVP_MAC_update_ossl3_shim(void *ctx, const unsigned char *data, 
+      size_t datalen) {
     return ((*evp_mac_update_fptr)(ctx, data, datalen));
   }
 
-  int EVP_MAC_final_ossl3_shim(void *ctx, unsigned char *out, size_t *outl, size_t outsize) {
+  int EVP_MAC_final_ossl3_shim(void *ctx, unsigned char *out, size_t *outl, 
+        size_t outsize) {
     return ((*evp_mac_final_fptr)(ctx, out, outl, outsize));
   }
 
@@ -237,7 +262,8 @@ namespace azure {  namespace storage_lite {
     return ((*evp_digestupdate_fptr)(ctx, d, cnt));
   }
 
-  int EVP_DigestFinal_ex_ossl3_shim(void *ctx, unsigned char *md, unsigned int *s) {
+  int EVP_DigestFinal_ex_ossl3_shim(void *ctx, unsigned char *md, 
+        unsigned int *s) {
     return ((*evp_digestfinal_ex_fptr)(ctx, md, s));
   }
 
@@ -252,5 +278,10 @@ namespace azure {  namespace storage_lite {
   void* EVP_MD_CTX_new_ossl3_shim(void) {
     return ((*evp_md_ctx_new_fptr)());
   }
+
+  const void* EVP_sha256_ossl3_shim(void) {
+    return ((*evp_sha256_fptr)());
+  }
+
 
 }}  // azure::storage_lite
