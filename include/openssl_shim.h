@@ -66,6 +66,22 @@ namespace azure {  namespace storage_lite {
 
 #define MD5_CTX MD5_CTX_OSSL1_SHIM;
 
+#define SHA_LONG_OSSL1_SHIM unsigned int
+#define SHA_LBLOCK_OSSL1_SHIM      16
+#define SHA_CBLOCK_OSSL1_SHIM      (SHA_LBLOCK_OSSL1_SHIM*4)/* SHA treats input data as a
+                                        * contiguous array of 32 bit wide
+                                        * big-endian values. */
+#define SHA_LAST_BLOCK_OSSL1_SHIM  (SHA_CBLOCK_OSSL1_SHIM-8)
+#define SHA_DIGEST_LENGTH_OSSL1_SHIM 20
+
+typedef struct SHAstate_ossl1_shim_st {
+    SHA_LONG_OSSL1_SHIM h0, h1, h2, h3, h4; 
+    SHA_LONG_OSSL1_SHIM Nl, Nh; 
+    SHA_LONG_OSSL1_SHIM data[SHA_LBLOCK_OSSL1_SHIM];
+    unsigned int num;
+} SHA_CTX_OSSL1_SHIM;
+
+
 
 #define HMAC_CTX_new   HMAC_CTX_new_ossl1_shim
 #define HMAC_CTX_reset HMAC_CTX_reset_ossl1_shim
