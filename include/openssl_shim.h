@@ -81,6 +81,7 @@ typedef struct SHAstate_ossl1_shim_st {
     unsigned int num;
 } SHA_CTX_OSSL1_SHIM;
 
+#define SHA_CTX SHA_CTX_OSSL1_SHIM;
 
 
 #define HMAC_CTX_new   HMAC_CTX_new_ossl1_shim
