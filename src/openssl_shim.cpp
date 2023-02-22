@@ -48,6 +48,8 @@ namespace azure {  namespace storage_lite {
   int (*evp_digestupdate_fptr)(void *, const void *, size_t );
   int (*evp_digestfinal_ex_fptr)(void *, unsigned char *, unsigned int *);
   void (*evp_md_ctx_free_fptr)(void *);
+  const void* (*evp_md5_fptr)(void);
+  void* (*evp_md_ctx_new_fptr)(void);
 
 
   void *get_dlopen_handle(const std::string& name, const std::string& version) {
@@ -142,6 +144,9 @@ namespace azure {  namespace storage_lite {
             (int (*)(void *, unsigned char *, unsigned int *)) );
         BIND_SYMBOL(dl_handle, evp_md_ctx_free_fptr, "EVP_MD_CTX_free", 
             (void (*)(void *)) );
+        BIND_SYMBOL(dl_handle, evp_md5_fptr, "EVP_md5", (const void*(*)(void)));
+        BIND_SYMBOL(dl_handle, evp_md_ctx_new_fptr, "EVP_MD_CTX_new", 
+            (void* (*)(void)) );
       }
     }
   }
@@ -238,6 +243,14 @@ namespace azure {  namespace storage_lite {
 
   void EVP_MD_CTX_free_ossl3_shim(void *ctx) {
     return ((*evp_md_ctx_free_fptr)(ctx));
+  }
+
+  const void* EVP_md5_ossl3_shim(void) {
+    return ((*evp_md5_fptr)());
+  }
+
+  void* EVP_MD_CTX_new_ossl3_shim(void) {
+    return ((*evp_md_ctx_new_fptr)());
   }
 
 }}  // azure::storage_lite

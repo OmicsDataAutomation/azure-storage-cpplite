@@ -117,6 +117,8 @@ namespace azure {  namespace storage_lite {
 #define EVP_DigestUpdate    EVP_DigestUpdate_ossl3_shim
 #define EVP_DigestFinal_ex  EVP_DigestFinal_ex_ossl3_shim
 #define EVP_MD_CTX_free     EVP_MD_CTX_free_ossl3_shim
+#define EVP_md5             EVP_md5_ossl3_shim
+#define EVP_MD_CTX_new      EVP_MD_CTX_new_ossl3_shim
 #define OSSL_PARAM_construct_utf8_string OSSL_PARAM_construct_utf8_string_ossl3_shim
 #define OSSL_PARAM_construct_end OSSL_PARAM_construct_end_ossl3_shim
 
@@ -138,5 +140,7 @@ namespace azure {  namespace storage_lite {
   int EVP_DigestUpdate_ossl3_shim(void *ctx, const void *d, size_t cnt);
   int EVP_DigestFinal_ex_ossl3_shim(void *ctx, unsigned char *md, unsigned int *s);
   void EVP_MD_CTX_free_ossl3_shim(void *ctx);
+  const void* EVP_md5_ossl3_shim(void);
+  void* EVP_MD_CTX_new_ossl3_shim(void);
 
 }}
