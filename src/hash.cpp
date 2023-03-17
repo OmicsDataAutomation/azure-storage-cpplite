@@ -1,6 +1,6 @@
 #include "hash.h"
 #include "base64.h"
-#include "openssl_shim.h"
+#include "azurite_openssl_shim.h"
 
 #include <stdexcept>
 
@@ -33,7 +33,6 @@ namespace azure {  namespace storage_lite {
         BCryptDestroyHash(hash_handle);
 #else
 #ifdef USE_OPENSSL
-        ossl_shim_init();
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
         HMAC_CTX ctx;
         HMAC_CTX_init(&ctx);
@@ -42,7 +41,7 @@ namespace azure {  namespace storage_lite {
         HMAC_Final(&ctx, digest, &digest_length);
         HMAC_CTX_cleanup(&ctx);
 #else
-        if(ossl_ver < 0x30000000L ) {
+        if(OpenSSL_version_num() < 0x30000000L ) {
           void* ctx = HMAC_CTX_new();
           HMAC_CTX_reset(ctx);
           HMAC_Init_ex(ctx, key.data(), static_cast<int>(key.size()), EVP_sha256(), NULL);
