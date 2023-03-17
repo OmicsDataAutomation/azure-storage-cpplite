@@ -78,10 +78,10 @@ jobs:
 #          temp_root=$(dirname $crypto_lib_path) 
 #          export ossl_root=$(dirname "$temp_root") 
           cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root $GITHUB_WORKSPACE
-        else
-          echo "*** OPENSSL_VERSION NOT found"
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
-        fi
+#        else
+#          echo "*** OPENSSL_VERSION NOT found"
+#          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
+#        fi
         make -j4
         make test
       env:
