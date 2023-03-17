@@ -63,8 +63,8 @@ int __attribute__((weak)) HMAC_Init_ex(HMAC_CTX *ctx, const void *key,
 int __attribute__((weak)) HMAC_Update(HMAC_CTX *ctx, const unsigned char *data, size_t len);
 int __attribute__((weak)) HMAC_Final(HMAC_CTX *ctx, unsigned char *md, unsigned int *len);
 void __attribute__((weak)) HMAC_CTX_free(HMAC_CTX *ctx);
-void __attribute__((weak)) HMAC_CTX_init(HMAC_CTX *ctx);
-void __attribute__((weak)) HMAC_CTX_cleanup(HMAC_CTX *ctx);
+//void __attribute__((weak)) HMAC_CTX_init(HMAC_CTX *ctx);
+//void __attribute__((weak)) HMAC_CTX_cleanup(HMAC_CTX *ctx);
 
 // See md5.h
 
@@ -178,6 +178,8 @@ struct ossl_param_st {
   size_t data_size;       /* data size */
   size_t return_size;     /* returned content size */
 };
+
+typedef struct ossl_param_st OSSL_PARAM;
 
 OSSL_PARAM __attribute__((weak))
 OSSL_PARAM_construct_utf8_string(const char*, char*, size_t);
