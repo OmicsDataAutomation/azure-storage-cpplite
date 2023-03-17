@@ -46,15 +46,6 @@ typedef struct evp_md_st   EVP_MD;
 typedef struct engine_st   ENGINE;
 typedef struct evp_md_ctx_st EVP_MD_CTX;
 typedef struct SHA256state_st SHA256_CTX;
-#define HMAC_MAX_MD_CBLOCK_SIZE     144
-struct hmac_ctx_st {
-    const EVP_MD *md;
-    EVP_MD_CTX *md_ctx;
-    EVP_MD_CTX *i_ctx;
-    EVP_MD_CTX *o_ctx;
-    unsigned int key_length;
-    unsigned char key[HMAC_MAX_MD_CBLOCK_SIZE];
-};
 typedef struct hmac_ctx_st HMAC_CTX;
 HMAC_CTX* __attribute__((weak)) HMAC_CTX_new(void);
 int __attribute__((weak)) HMAC_CTX_reset(HMAC_CTX*);
