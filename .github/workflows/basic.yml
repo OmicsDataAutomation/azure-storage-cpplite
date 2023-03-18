@@ -16,7 +16,11 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macOS-11]
+        os: [ubuntu-20.04, ubuntu-22.04]
+          - os: macOS-11
+            openssl-version: 3
+          - os: macOS-11
+            openssl-version: 1.1 
 
     runs-on: ${{ matrix.os }}
 
@@ -41,8 +45,10 @@ jobs:
       run: |
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
-        brew list openssl@1.1 &>/dev/null || brew install openssl@1.1
+        brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
         mkdir $CMAKE_BUILD_DIR
+      env:
+        OPENSSL_ROOT_DIR: /usr/local/opt/openssl@${{matrix.openssl-version}}
 
     - name: Build
       shell: bash
