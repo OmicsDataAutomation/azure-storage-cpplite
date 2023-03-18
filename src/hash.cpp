@@ -64,4 +64,6 @@ namespace azure {  namespace storage_lite {
 #endif
         return to_base64(std::vector<unsigned char>(digest, digest + digest_length));
     }
+
+
 }}  // azure::storage_lite
