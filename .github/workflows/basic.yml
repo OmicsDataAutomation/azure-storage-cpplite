@@ -17,6 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
+        include:
           - os: macOS-11
             openssl-version: 3
           - os: macOS-11
