@@ -7,7 +7,7 @@
 #include <bcrypt.h>
 #else
 #ifdef USE_OPENSSL
-#include <openssl/hmac.h>
+#include <azure_openssl_shim.h>
 #else
 #include <gnutls/gnutls.h>
 #include <gnutls/crypto.h>
@@ -43,6 +43,7 @@ namespace azure {  namespace storage_lite {
         BCryptDestroyHash(hash_handle);
 #else
 #ifdef USE_OPENSSL
+/*
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
         HMAC_CTX ctx;
         HMAC_CTX_init(&ctx);
@@ -51,20 +52,32 @@ namespace azure {  namespace storage_lite {
         HMAC_Final(&ctx, digest, &digest_length);
         HMAC_CTX_cleanup(&ctx);
 #else
-        HMAC_CTX * ctx = HMAC_CTX_new();
-        HMAC_CTX_reset(ctx);
-        HMAC_Init_ex(ctx, key.data(), static_cast<int>(key.size()), EVP_sha256(), NULL);
-        HMAC_Update(ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
-        HMAC_Final(ctx, digest, &digest_length);
-        HMAC_CTX_free(ctx);
-#endif
+*/
+        if(OpenSSL_version_num() < 0x30000000L ) {
+          HMAC_CTX* ctx = HMAC_CTX_new();
+          HMAC_CTX_reset(ctx);
+          HMAC_Init_ex(ctx, key.data(), static_cast<int>(key.size()), EVP_sha256(), NULL);
+          HMAC_Update(ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
+          HMAC_Final(ctx, digest, &digest_length);
+          HMAC_CTX_free(ctx); }
+        else{
+          EVP_MAC* mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
+          EVP_MAC_CTX* m_ctx = EVP_MAC_CTX_new(mac);
+          char sha256[] {"SHA256"};
+          OSSL_PARAM ossl_params[2];
+
+          ossl_params[0] = OSSL_PARAM_construct_utf8_string(OSSL_MAC_PARAM_DIGEST, sha256, 0);
+          ossl_params[1] = OSSL_PARAM_construct_end();
+          EVP_MAC_init(m_ctx, key.data(), static_cast<int>(key.size()), ossl_params);
+          EVP_MAC_update(m_ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
+          EVP_MAC_final(m_ctx, digest, NULL, digest_length);
+        }
+
+//#endif
 #else
         gnutls_hmac_fast(GNUTLS_MAC_SHA256, key.data(), key.size(), (const unsigned char *)to_sign.data(), to_sign.size(), digest);
 #endif
 #endif
         return to_base64(std::vector<unsigned char>(digest, digest + digest_length));
     }
-
-
-
 }}  // azure::storage_lite
