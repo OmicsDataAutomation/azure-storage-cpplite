@@ -43,16 +43,6 @@ namespace azure {  namespace storage_lite {
         BCryptDestroyHash(hash_handle);
 #else
 #ifdef USE_OPENSSL
-/*
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-        HMAC_CTX ctx;
-        HMAC_CTX_init(&ctx);
-        HMAC_Init_ex(&ctx, key.data(), static_cast<int>(key.size()), EVP_sha256(), NULL);
-        HMAC_Update(&ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
-        HMAC_Final(&ctx, digest, &digest_length);
-        HMAC_CTX_cleanup(&ctx);
-#else
-*/
         if(OpenSSL_version_num() < 0x30000000L ) {
           HMAC_CTX* ctx = HMAC_CTX_new();
           HMAC_CTX_reset(ctx);
@@ -73,7 +63,6 @@ namespace azure {  namespace storage_lite {
           EVP_MAC_final(m_ctx, digest, NULL, digest_length);
         }
 
-//#endif
 #else
         gnutls_hmac_fast(GNUTLS_MAC_SHA256, key.data(), key.size(), (const unsigned char *)to_sign.data(), to_sign.size(), digest);
 #endif
