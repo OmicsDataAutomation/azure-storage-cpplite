@@ -61,6 +61,8 @@ namespace azure {  namespace storage_lite {
           EVP_MAC_init(m_ctx, key.data(), static_cast<int>(key.size()), ossl_params);
           EVP_MAC_update(m_ctx, (const unsigned char*)to_sign.c_str(), to_sign.size());
           EVP_MAC_final(m_ctx, digest, NULL, digest_length);
+          EVP_MAC_free(mac);
+          EVP_MAC_CTX_free(m_ctx);
         }
 
 #else
