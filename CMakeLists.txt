@@ -14,7 +14,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -g3 -gdwarf-3 -Wall")
+set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -g3 -gdwarf-3 -Wall -Wno-reorder")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fvisibility=hidden")
 set(CMAKE_CXX_FLAGS_COVERAGE "-DDEBUG -g3 -gdwarf-3 --coverage")
 
@@ -171,7 +171,7 @@ if(BUILD_TESTS)
 endif()
 
 target_include_directories(azure-storage-lite PUBLIC ${PROJECT_SOURCE_DIR}/include ${CURL_INCLUDE_DIRS} PRIVATE ${EXTRA_INCLUDE_DIRS})
-target_link_libraries(azure-storage-lite Threads::Threads ${CURL_LIBRARIES} ${EXTRA_LIBRARIES})
+target_link_libraries(azure-storage-lite Threads::Threads ${CURL_LIBRARIES} ${EXTRA_LIBRARIES} ${CMAKE_DL_LIBS})
 
 if(MSVC)
   target_compile_options(azure-storage-lite PRIVATE /W4 /WX /MP)
