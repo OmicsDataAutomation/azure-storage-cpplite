@@ -21,7 +21,7 @@ jobs:
           - os: macOS-11
             openssl-version: 3
           - os: macOS-11
-            openssl-version: 1.1
+            openssl-version: 1.1 
 
     runs-on: ${{ matrix.os }}
 
@@ -47,44 +47,17 @@ jobs:
         brew list cmake &>/dev/null || brew install cmake
         brew list lcov &>/dev/null || brew install lcov
         brew list openssl@${{matrix.openssl-version}} &>/dev/null || brew install openssl@${{matrix.openssl-version}}
-        if [[ ${{matrix.openssl-version}} == 1.1 ]]; then
-          echo "Uninstalling OpenSSL3"
-          brew uninstall --ignore-dependencies openssl@3
-          brew cleanup -s openssl@3
-          brew cleanup --prune-prefix
-        fi
         mkdir $CMAKE_BUILD_DIR
+      env:
+        OPENSSL_ROOT_DIR: /usr/local/opt/openssl@${{matrix.openssl-version}}
 
-    - name: Build on Ubuntu
-      if: startsWith(matrix.os, 'ubuntu')
+    - name: Build
       shell: bash
       working-directory: ${{env.CMAKE_BUILD_DIR}}
       run: |
         cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
         make -j4
         make test
-
-
-    - name: Build on MacOS
-      if: startsWith(matrix.os, 'macOS')
-      shell: bash
-      working-directory: ${{env.CMAKE_BUILD_DIR}}
-      run: |
-        export OPENSSL_VERSION=${{matrix.openssl-version}}
-        if [[ !  -z  ${OPENSSL_VERSION} ]]; then
-          crypto_lib_path=`brew list openssl@${{matrix.openssl-version}} | grep "libcrypto.dylib$"`
-          ln -s $crypto_lib_path /usr/local/lib/libcrypto.dylib 
-          echo "Path of crypto lib $crypto_lib_path"
-          temp_root=$(dirname $crypto_lib_path) 
-          export ossl_root=$(dirname "$temp_root") 
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON -DOPENSSL_ROOT_DIR=$ossl_root $GITHUB_WORKSPACE
-        else
-          echo "*** OPENSSL_VERSION NOT found"
-          cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_TESTS=ON $GITHUB_WORKSPACE
-        fi
-        make -j4
-        make test
-
 
     - name: Launch Azurite
       shell: bash
