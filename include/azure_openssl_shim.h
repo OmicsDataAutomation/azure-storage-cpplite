@@ -34,7 +34,9 @@
 
 #pragma once
 
-namespace azure {  namespace storage_lite {
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // General
 unsigned long OpenSSL_version_num(void);
@@ -192,4 +194,6 @@ __attribute__((weak)) void ERR_error_string_n(unsigned long e, char *buf, size_t
 __attribute__((weak)) int RAND_poll(void);
 __attribute__((weak)) int RAND_bytes(unsigned char *buf, int num);
 
-}}
+#ifdef __cplusplus
+}
+#endif
