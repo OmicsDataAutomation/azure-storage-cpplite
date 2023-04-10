@@ -16,7 +16,9 @@ set(AZURE_STORAGE_TEST_SOURCES
   integration/append_blob_integration_test.cpp
   integration/page_blob_integration_test.cpp
   integration/performance_test.cpp
-)
+  )
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-sign-compare")
 
 add_executable(azure-storage-test ${AZURE_STORAGE_TEST_SOURCES})
 if(WIN32)
