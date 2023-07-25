@@ -45,14 +45,14 @@ namespace azure {  namespace storage_lite {
             std::string path = path_start == std::string::npos ? "" : endpoint.substr(path_start);
 
             std::string domain = scheme + host;
-            if(domain.find(".dfs.") != std::string::npos)
-                domain.replace(domain.find(".dfs."),5,".blob.");
+            if (domain.find(".dfs.") != std::string::npos)
+                domain.replace(domain.find(".dfs."), 5, ".blob.");
             m_blob_url.set_domain(domain);
             m_table_url.set_domain(domain);
             m_queue_url.set_domain(domain);
             m_file_url.set_domain(domain);
-            if(domain.find(".blob.") != std::string::npos)
-                domain.replace(domain.find(".blob."),6,".dfs.");
+            if (domain.find(".blob.") != std::string::npos)
+                domain.replace(domain.find(".blob."), 6, ".dfs.");
             m_adls_url.set_domain(domain);
 
             if (!path.empty()) {
