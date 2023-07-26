@@ -105,14 +105,23 @@ TEST_CASE("Storage endpoint", "[endpoint]")
         {true, "127.0.0.1/account", "https://127.0.0.1", "/account", "https://127.0.0.1/account"},
         {false, "127.0.0.1:8888/account", "http://127.0.0.1:8888", "/account", "http://127.0.0.1:8888/account"},
         {false, "https://127.0.0.1:8888/account", "http://127.0.0.1:8888", "/account", "http://127.0.0.1:8888/account"},
+        {true, "https://account.dfs.core.windows.net", "https://account.dfs.core.windows.net", "", "https://account.dfs.core.windows.net"},
     };
 
     for (const auto& c: test_cases)
     {
         auto account = std::make_shared<azure::storage_lite::storage_account>(account_name, cred, c.use_https, c.endpoint);
-        CHECK(c.domain == account->get_url(azure::storage_lite::storage_account::service::blob).get_domain());
         CHECK(c.path == account->get_url(azure::storage_lite::storage_account::service::blob).get_path());
-        CHECK(c.url == account->get_url(azure::storage_lite::storage_account::service::blob).to_string());
+        if (c.url.find(".dfs.") == std::string::npos){
+            CHECK(c.url == account->get_url(azure::storage_lite::storage_account::service::blob).to_string());
+            CHECK(c.domain == account->get_url(azure::storage_lite::storage_account::service::blob).get_domain());
+        }
+        else {
+            CHECK(c.url == account->get_url(azure::storage_lite::storage_account::service::adls).to_string());
+            CHECK((c.url.substr(0,c.url.find(".dfs.")) + ".blob." + c.url.substr(c.url.find(".dfs.") + 5)) == account->get_url(azure::storage_lite::storage_account::service::blob).to_string());
+            CHECK(c.domain == account->get_url(azure::storage_lite::storage_account::service::adls).get_domain());
+            CHECK((c.endpoint.substr(0,c.endpoint.find(".dfs.")) + ".blob." + c.endpoint.substr(c.endpoint.find(".dfs.") + 5)) == (account->get_url(azure::storage_lite::storage_account::service::blob).to_string()));
+        }
     }
 }
 
