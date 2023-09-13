@@ -138,8 +138,8 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const st
         std::vector<std::future<void>> task_futures;
     };
 
-    auto info = std::make_shared<concurrent_task_info>(concurrent_task_info{ container, blob, buffer, offset, size, block_size, num_blocks });
-    auto context = std::make_shared<concurrent_task_context>();
+    auto info = new concurrent_task_info(concurrent_task_info{ container, blob, buffer, offset, size, block_size, num_blocks });
+    auto context = new concurrent_task_context();
     context->num_workers = parallelism;
 
     auto thread_download_func = [this, info, context]()
@@ -181,7 +181,11 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const st
         context->task_futures.emplace_back(std::async(std::launch::async, thread_download_func));
     }
 
-    return context->task_promise.get_future();
+    auto future = context->task_promise.get_future();
+    delete context;
+    delete info;
+
+    return future;
 }
 
 std::future<storage_outcome<void>> blob_client::upload_block_blob_from_stream(const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata)
@@ -277,8 +281,8 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
         std::promise<storage_outcome<void>> task_promise;
         std::vector<std::future<void>> task_futures;
     };
-    auto info = std::make_shared<concurrent_task_info>(concurrent_task_info{ container, blob, buffer, bufferlen, block_size, num_blocks, std::move(block_list), metadata });
-    auto context = std::make_shared<concurrent_task_context>();
+    auto info = new concurrent_task_info(concurrent_task_info{ container, blob, buffer, bufferlen, block_size, num_blocks, std::move(block_list), metadata });
+    auto context = new concurrent_task_context();
     context->num_workers = parallelism;
 
     auto thread_upload_func = [this, info, context]()
@@ -320,7 +324,11 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
         context->task_futures.emplace_back(std::async(std::launch::async, thread_upload_func));
     }
 
-    return context->task_promise.get_future();
+    auto future = context->task_promise.get_future();
+    delete context;
+    delete info;
+
+    return future;
 }
 
 std::future<storage_outcome<void>> blob_client::upload_block_from_buffer(const std::string &container, const std::string &blob, const std::string &blockid, const char* buff, uint64_t bufferlen)
