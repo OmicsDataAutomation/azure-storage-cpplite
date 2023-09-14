@@ -108,14 +108,14 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_stream(const st
 
 std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const std::string &container, const std::string &blob, unsigned long long offset, unsigned long long size, char* buffer, int parallelism)
 {
-    parallelism = std::min(parallelism, int(concurrency()));
-
     const uint64_t grain_size = 64 * 1024;
     uint64_t block_size = size / parallelism;
     block_size = (block_size + grain_size - 1) / grain_size * grain_size;
     block_size = std::min(block_size, constants::default_block_size);
 
     int num_blocks = int((size + block_size - 1) / block_size);
+
+    parallelism = std::min(parallelism, num_blocks);
 
     struct concurrent_task_info
     {
