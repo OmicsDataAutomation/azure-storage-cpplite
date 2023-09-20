@@ -115,8 +115,6 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const st
 
     int num_blocks = int((size + block_size - 1) / block_size);
 
-    parallelism = std::min(parallelism, num_blocks);
-
     struct concurrent_task_info
     {
         std::string container;
@@ -138,8 +136,8 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const st
         std::vector<std::future<void>> task_futures;
     };
 
-    auto info = new concurrent_task_info(concurrent_task_info{ container, blob, buffer, offset, size, block_size, num_blocks });
-    auto context = new concurrent_task_context();
+    auto info = std::make_shared<concurrent_task_info>(concurrent_task_info{ container, blob, buffer, offset, size, block_size, num_blocks });
+    auto context = std::make_shared<concurrent_task_context>();
     context->num_workers = parallelism;
 
     auto thread_download_func = [this, info, context]()
@@ -181,11 +179,12 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const st
         context->task_futures.emplace_back(std::async(std::launch::async, thread_download_func));
     }
 
-    auto future = context->task_promise.get_future();
-    delete context;
-    delete info;
+    for (int i = 0; i < parallelism; ++i)
+    {
+        context->task_futures[i].get();
+    }
 
-    return future;
+    return context->task_promise.get_future();
 }
 
 std::future<storage_outcome<void>> blob_client::upload_block_blob_from_stream(const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata)
@@ -239,8 +238,6 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
         return promise.get_future();
     }
 
-    parallelism = std::min(parallelism, int(concurrency()));
-
     const uint64_t grain_size = 4 * 1024 * 1024;
     uint64_t block_size = bufferlen / constants::max_num_blocks;
     block_size = (block_size + grain_size - 1) / grain_size * grain_size;
@@ -248,6 +245,8 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
     block_size = std::max(block_size, constants::default_block_size);
 
     int num_blocks = int((bufferlen + block_size - 1) / block_size);
+
+    parallelism = std::min(parallelism, num_blocks);
 
     std::vector<put_block_list_request_base::block_item> block_list;
     block_list.reserve(num_blocks);
@@ -281,8 +280,8 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
         std::promise<storage_outcome<void>> task_promise;
         std::vector<std::future<void>> task_futures;
     };
-    auto info = new concurrent_task_info(concurrent_task_info{ container, blob, buffer, bufferlen, block_size, num_blocks, std::move(block_list), metadata });
-    auto context = new concurrent_task_context();
+    auto info = std::make_shared<concurrent_task_info>(concurrent_task_info{ container, blob, buffer, bufferlen, block_size, num_blocks, std::move(block_list), metadata });
+    auto context = std::make_shared<concurrent_task_context>();
     context->num_workers = parallelism;
 
     auto thread_upload_func = [this, info, context]()
@@ -324,11 +323,12 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
         context->task_futures.emplace_back(std::async(std::launch::async, thread_upload_func));
     }
 
-    auto future = context->task_promise.get_future();
-    delete context;
-    delete info;
+    for (int i = 0; i < parallelism; ++i)
+    {
+        context->task_futures[i].get();
+    }
 
-    return future;
+    return context->task_promise.get_future();
 }
 
 std::future<storage_outcome<void>> blob_client::upload_block_from_buffer(const std::string &container, const std::string &blob, const std::string &blockid, const char* buff, uint64_t bufferlen)
