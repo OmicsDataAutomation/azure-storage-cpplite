@@ -246,8 +246,6 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
 
     int num_blocks = int((bufferlen + block_size - 1) / block_size);
 
-    parallelism = std::min(parallelism, num_blocks);
-
     std::vector<put_block_list_request_base::block_item> block_list;
     block_list.reserve(num_blocks);
     std::string uuid = get_uuid();
