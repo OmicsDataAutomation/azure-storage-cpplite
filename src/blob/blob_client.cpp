@@ -111,9 +111,10 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const st
     const uint64_t grain_size = 64 * 1024;
     uint64_t block_size = size / parallelism;
     block_size = (block_size + grain_size - 1) / grain_size * grain_size;
-    block_size = std::min(block_size, constants::default_block_size);
 
     int num_blocks = int((size + block_size - 1) / block_size);
+
+    parallelism = std::min(parallelism, num_blocks);
 
     struct concurrent_task_info
     {
@@ -245,6 +246,8 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
     block_size = std::max(block_size, constants::default_block_size);
 
     int num_blocks = int((bufferlen + block_size - 1) / block_size);
+
+    parallelism = std::min(parallelism, num_blocks);
 
     std::vector<put_block_list_request_base::block_item> block_list;
     block_list.reserve(num_blocks);
