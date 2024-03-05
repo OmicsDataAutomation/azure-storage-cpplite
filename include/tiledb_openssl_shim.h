@@ -38,6 +38,8 @@
 extern "C" {
 #endif
 
+#include <cstdint>
+
 // General
 unsigned long OpenSSL_version_num(void);
 
