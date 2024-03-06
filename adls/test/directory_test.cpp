@@ -3,6 +3,8 @@
 #include "adls_client.h"
 #include "adls_test_base.h"
 
+#include <unistd.h>
+
 TEST_CASE("Create Directory", "[adls][directory]")
 {
     {
@@ -171,6 +173,8 @@ TEST_CASE("Move Directory", "[adls][directory]")
     // Move a directory into another directory
     client.move_directory(fs1_name, src_dir, fs2_name, dest_dir);
     REQUIRE(errno == 0);
+
+    sleep(10);
 
     REQUIRE_FALSE(client.file_exists(fs1_name, src_dir + "/" + file1));
     REQUIRE_FALSE(client.file_exists(fs1_name, src_dir + "/" + file2));

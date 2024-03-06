@@ -108,14 +108,13 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_stream(const st
 
 std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const std::string &container, const std::string &blob, unsigned long long offset, unsigned long long size, char* buffer, int parallelism)
 {
-    parallelism = std::min(parallelism, int(concurrency()));
-
     const uint64_t grain_size = 64 * 1024;
     uint64_t block_size = size / parallelism;
     block_size = (block_size + grain_size - 1) / grain_size * grain_size;
-    block_size = std::min(block_size, constants::default_block_size);
 
     int num_blocks = int((size + block_size - 1) / block_size);
+
+    parallelism = std::min(parallelism, num_blocks);
 
     struct concurrent_task_info
     {
@@ -181,6 +180,11 @@ std::future<storage_outcome<void>> blob_client::download_blob_to_buffer(const st
         context->task_futures.emplace_back(std::async(std::launch::async, thread_download_func));
     }
 
+    for (int i = 0; i < parallelism; ++i)
+    {
+        context->task_futures[i].get();
+    }
+
     return context->task_promise.get_future();
 }
 
@@ -235,8 +239,6 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
         return promise.get_future();
     }
 
-    parallelism = std::min(parallelism, int(concurrency()));
-
     const uint64_t grain_size = 4 * 1024 * 1024;
     uint64_t block_size = bufferlen / constants::max_num_blocks;
     block_size = (block_size + grain_size - 1) / grain_size * grain_size;
@@ -244,6 +246,8 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
     block_size = std::max(block_size, constants::default_block_size);
 
     int num_blocks = int((bufferlen + block_size - 1) / block_size);
+
+    parallelism = std::min(parallelism, num_blocks);
 
     std::vector<put_block_list_request_base::block_item> block_list;
     block_list.reserve(num_blocks);
@@ -318,6 +322,11 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_buffer(co
     for (int i = 0; i < parallelism; ++i)
     {
         context->task_futures.emplace_back(std::async(std::launch::async, thread_upload_func));
+    }
+
+    for (int i = 0; i < parallelism; ++i)
+    {
+        context->task_futures[i].get();
     }
 
     return context->task_promise.get_future();
