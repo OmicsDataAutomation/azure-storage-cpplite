@@ -86,7 +86,12 @@ namespace azure {  namespace storage_lite {
         }
         const std::map<std::string, std::string, case_insensitive_compare>& get_response_headers() const override
         {
-            return m_response_headers;
+          std::cout << "\n****Printing response headers:\n";
+          for (auto const& header :  m_response_headers) {
+            std::cout << header.first << ':'  << header.second << "\n";
+            }
+          std::cout <<  "****Printing response headers DONE\n" << std::endl;
+          return m_response_headers;
         }
 
         AZURE_STORAGE_API CURLcode perform() override;
